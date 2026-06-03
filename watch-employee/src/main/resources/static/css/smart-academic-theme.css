@@ -350,7 +350,8 @@ html.embedded-mode select:focus {
 html.embedded-mode .form-control::placeholder,
 html.embedded-mode textarea::placeholder,
 html.embedded-mode input::placeholder {
-    color: rgba(110, 231, 183, 0.4) !important;
+    color: rgba(226, 245, 237, 0.5) !important;
+    opacity: 1 !important;
 }
 html.embedded-mode .form-label,
 html.embedded-mode label {

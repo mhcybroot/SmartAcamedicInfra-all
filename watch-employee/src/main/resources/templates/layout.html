@@ -102,6 +102,31 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Embedded Header/Navbar for embedded mode navigation -->
+        <div class="embedded-navbar">
+            <a href="/admin" class="embedded-nav-item" th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
+                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+            </a>
+            <a href="/admin/devices" class="embedded-nav-item" th:classappend="${activePage == 'devices' ? 'active' : ''}">
+                <i class="bi bi-laptop"></i> Devices
+            </a>
+            <a href="/admin/categories" class="embedded-nav-item" th:classappend="${activePage == 'categories' ? 'active' : ''}">
+                <i class="bi bi-tags"></i> Categories
+            </a>
+            <a href="/admin/users" class="embedded-nav-item" th:classappend="${activePage == 'users' ? 'active' : ''}">
+                <i class="bi bi-people"></i> Admins
+            </a>
+            <a href="/admin/credentials" class="embedded-nav-item" th:classappend="${activePage == 'credentials' ? 'active' : ''}">
+                <i class="bi bi-key"></i> Credentials
+            </a>
+            <a href="/admin/credential-groups" class="embedded-nav-item" th:classappend="${activePage == 'credential-groups' ? 'active' : ''}">
+                <i class="bi bi-collection"></i> Groups
+            </a>
+            <a href="/admin/blocking" class="embedded-nav-item" th:classappend="${activePage == 'blocking' ? 'active' : ''}">
+                <i class="bi bi-shield-lock"></i> Blocking
+            </a>
+        </div>
+
         <th:block th:replace="${content}"></th:block>
     </main>
 

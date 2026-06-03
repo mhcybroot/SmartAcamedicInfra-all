@@ -934,3 +934,52 @@ html.embedded-mode .badge-neutral {
     color: #e2f5ed !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
+
+/* Embedded Horizontal Navbar */
+.embedded-navbar {
+    display: none; /* Hidden by default in standalone mode */
+}
+
+html.embedded-mode .embedded-navbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(16, 185, 129, 0.04) !important;
+    border: 1px solid rgba(16, 185, 129, 0.15) !important;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+html.embedded-mode .embedded-nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: #e2f5ed !important;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+html.embedded-mode .embedded-nav-item i {
+    font-size: 1rem;
+    color: #6ee7b7;
+}
+
+html.embedded-mode .embedded-nav-item:hover {
+    background: rgba(16, 185, 129, 0.08) !important;
+    border-color: rgba(16, 185, 129, 0.2) !important;
+    color: #34d399 !important;
+}
+
+html.embedded-mode .embedded-nav-item.active {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: #10b981 !important;
+    font-weight: 600;
+}

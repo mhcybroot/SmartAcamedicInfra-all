@@ -6,6 +6,8 @@ import mh.cyb.root.rms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -14,6 +16,9 @@ import java.util.*;
 
 @Service
 public class DemoDataService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private StudentRepository studentRepository;
@@ -88,6 +93,7 @@ public class DemoDataService {
         subjectRepository.deleteAll();
         classRepository.deleteAll();
         sessionRepository.deleteAll();
+        entityManager.flush();
 
         Random rng = new Random();
 
@@ -286,6 +292,7 @@ public class DemoDataService {
         subjectRepository.deleteAll();
         classRepository.deleteAll();
         sessionRepository.deleteAll();
+        entityManager.flush();
         System.out.println("🗑️ Cleared all RMS demo data.");
     }
 }

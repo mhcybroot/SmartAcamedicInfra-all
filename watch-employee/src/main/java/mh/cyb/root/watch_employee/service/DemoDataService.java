@@ -144,7 +144,7 @@ public class DemoDataService {
         String encCoursera = encryptionService.encrypt("coursera-access-2026");
         String encGithub = encryptionService.encrypt("git-edu-devpass");
 
-        Credential credMain = new Credential("Smart Academic Main Portal", "http://localhost:8083", "sarah.mitchell", encMain, "Academic student account login");
+        Credential credMain = new Credential("Smart Academic Main Portal", "http://localhost:7511", "sarah.mitchell", encMain, "Academic student account login");
         credMain.setSubmittedByDeviceId("device-101");
         Credential credLms = new Credential("LMS Classroom Portal", "http://lms.school.edu", "sarah.mitchell", encLms, "LMS course submissions");
         credLms.setSubmittedByDeviceId("device-101");

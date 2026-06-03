@@ -36,3 +36,6 @@ __pycache__/
 .venv/
 venv/
 ENV/
+
+# Distribution packages
+smart-academic-windows.zip

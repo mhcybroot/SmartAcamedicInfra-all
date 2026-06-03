@@ -7,19 +7,19 @@ echo "================================================="
 # Create a logs directory
 mkdir -p logs
 
-echo "[1/4] Starting Result Management System (Port 9087)..."
+echo "[1/4] Starting Result Management System (Port 7512)..."
 cd Result-Management-System
 ./gradlew bootRun > ../logs/result_management.log 2>&1 &
 PID1=$!
 cd ..
 
-echo "[2/4] Starting Academic Member Management (Port 8083/8084)..."
+echo "[2/4] Starting Academic Member Management (Port 7511)..."
 cd Skylink-custom-backend
 ./gradlew bootRun > ../logs/skylink.log 2>&1 &
 PID2=$!
 cd ..
 
-echo "[3/4] Starting Student Watch System (Port 8565)..."
+echo "[3/4] Starting Student Watch System (Port 7513)..."
 cd watch-employee
 ./gradlew bootRun > ../logs/watch_employee.log 2>&1 &
 PID3=$!
@@ -34,7 +34,7 @@ cd ..
 echo "================================================="
 echo " All services are starting up in the background!"
 echo " "
-echo " You can access the unified portal at: http://localhost:5173"
+echo " You can access the unified portal at: http://localhost:7510"
 echo " "
 echo " To view logs, check the 'logs' directory."
 echo " Press Ctrl+C to stop all services and exit."

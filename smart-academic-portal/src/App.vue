@@ -116,7 +116,7 @@ function showToast(message, type = 'success') {
 async function generateAcademicData() {
   generatingAcademic.value = true
   try {
-    const res = await fetch('http://localhost:8083/api/demo/generate', { method: 'POST' })
+    const res = await fetch('http://localhost:7511/api/demo/generate', { method: 'POST' })
     const data = await res.json()
     if (res.ok) {
       showToast(data.message || `✅ Seeded ${data.seeded} academic members!`, 'success')
@@ -133,7 +133,7 @@ async function generateAcademicData() {
 async function generateExamData() {
   generatingExam.value = true
   try {
-    const res = await fetch('http://localhost:9087/api/demo/generate', { method: 'POST' })
+    const res = await fetch('http://localhost:7512/api/demo/generate', { method: 'POST' })
     const data = await res.json()
     if (res.ok) {
       showToast(data.message || `✅ Seeded student exam results!`, 'success')
@@ -150,7 +150,7 @@ async function generateExamData() {
 async function generateWatchData() {
   generatingWatch.value = true
   try {
-    const res = await fetch('http://localhost:8565/api/demo/generate', { method: 'POST' })
+    const res = await fetch('http://localhost:7513/api/demo/generate', { method: 'POST' })
     const data = await res.json()
     if (res.ok) {
       showToast(data.message || `✅ Seeded Student Watch mock data!`, 'success')

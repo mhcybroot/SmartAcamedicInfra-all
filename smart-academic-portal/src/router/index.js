@@ -13,19 +13,19 @@ const routes = [
     path: '/results',
     name: 'Results',
     component: IframeView,
-    meta: { src: 'http://localhost:9087?embedded=true', title: 'Result Management System' }
+    meta: { src: 'http://localhost:7512?embedded=true', title: 'Result Management System' }
   },
   {
     path: '/academic-members',
     name: 'AcademicMembers',
     component: IframeView,
-    meta: { src: 'http://localhost:8083?embedded=true', title: 'Academic Member Management' }
+    meta: { src: 'http://localhost:7511?embedded=true', title: 'Academic Member Management' }
   },
   {
     path: '/student-watch',
     name: 'StudentWatch',
     component: IframeView,
-    meta: { src: 'http://localhost:8565?embedded=true', title: 'Student Watch & Device Control' }
+    meta: { src: 'http://localhost:7513?embedded=true', title: 'Student Watch & Device Control' }
   },
   {
     path: '/student-portal',

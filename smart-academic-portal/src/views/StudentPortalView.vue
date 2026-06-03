@@ -90,7 +90,7 @@ import { ref } from 'vue'
 const mode = ref('admin')
 
 const adminUrl = 'http://localhost:8083/?embedded=true'
-const studentUrl = 'http://localhost:8083/employee/dashboard?embedded=true'
+const studentUrl = 'http://127.0.0.1:8083/employee/dashboard?embedded=true'
 
 const studentAuthenticated = ref(false)
 const studentUsername = ref('employee')
@@ -109,7 +109,7 @@ async function loginAsStudent() {
     formData.append('password', studentPassword.value)
     formData.append('remember-me', 'on')
 
-    const res = await fetch('http://localhost:8083/login', {
+    const res = await fetch('http://127.0.0.1:8083/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: formData.toString(),

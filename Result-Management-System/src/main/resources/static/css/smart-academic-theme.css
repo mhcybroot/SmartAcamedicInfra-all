@@ -48,7 +48,9 @@ html.embedded-mode #topbar {
 }
 
 /* ---- Style the sidebar with dark green theme ---- */
-html.embedded-mode #sidebar-wrapper,
+html.embedded-mode #sidebar-wrapper {
+    display: none !important;
+}
 html.embedded-mode .custom-sidebar {
     background: linear-gradient(180deg, #071910 0%, #0d2818 100%) !important;
     border-right: 1px solid rgba(16, 185, 129, 0.2) !important;

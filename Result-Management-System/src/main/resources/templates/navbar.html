@@ -20,7 +20,8 @@
 
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" th:fragment="navbar" style="
+<div th:fragment="navbar">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="
         background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
         border-bottom: 2px solid #8b5cf6;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
@@ -241,8 +242,9 @@
                 width: 100% !important;
             }
         }
+    </style>
 
-        <script> // Enhanced search functionality
+    <script> // Enhanced search functionality
 
         document.addEventListener('DOMContentLoaded', function () {
                 const searchInput=document.getElementById('searchInput');
@@ -343,4 +345,90 @@
                 }
             });
         });
-        </script></body></html>
+    </script>
+
+    <!-- Embedded Header/Navbar for embedded mode navigation -->
+    <div class="embedded-navbar" sec:authorize="hasAnyRole('SUPER_ADMIN', 'TEACHER')">
+        <a href="/admin/dashboard" class="embedded-nav-item">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/add-marks" class="embedded-nav-item">
+            <i class="fas fa-plus-circle"></i> Add Marks
+        </a>
+        <a href="/bulk/marks" class="embedded-nav-item">
+            <i class="fas fa-layer-group"></i> Bulk Entry
+        </a>
+        <a href="/attendance/take" class="embedded-nav-item">
+            <i class="fas fa-calendar-check"></i> Attendance
+        </a>
+        <a href="/view-results" class="embedded-nav-item">
+            <i class="fas fa-search"></i> Results
+        </a>
+        <a href="/reports" class="embedded-nav-item">
+            <i class="fas fa-file-pdf"></i> Reports
+        </a>
+        <a href="/students" class="embedded-nav-item">
+            <i class="fas fa-user-graduate"></i> Students
+        </a>
+        <a href="/teachers" class="embedded-nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+            <i class="fas fa-chalkboard-teacher"></i> Teachers
+        </a>
+        <a href="/subjects" class="embedded-nav-item">
+            <i class="fas fa-book"></i> Subjects
+        </a>
+        <a href="/classes" class="embedded-nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+            <i class="fas fa-chalkboard"></i> Classes
+        </a>
+        <a href="/exams" class="embedded-nav-item">
+            <i class="fas fa-clipboard-list"></i> Exams
+        </a>
+        <a href="/sessions" class="embedded-nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+            <i class="fas fa-calendar-alt"></i> Sessions
+        </a>
+        <a href="/import/marks" class="embedded-nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+            <i class="fas fa-file-import"></i> Import
+        </a>
+        <a href="/import/export" class="embedded-nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+            <i class="fas fa-file-export"></i> Export
+        </a>
+        <a href="/admin/users" class="embedded-nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+            <i class="fas fa-users-cog"></i> Users
+        </a>
+        <a href="/admin/activity-logs" class="embedded-nav-item" sec:authorize="hasRole('SUPER_ADMIN')">
+            <i class="fas fa-history"></i> Logs
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const isEmbedded = window.self !== window.top || window.location.search.includes('embedded=true');
+            
+            if (isEmbedded) {
+                document.documentElement.classList.add('embedded-mode');
+                
+                // Hide hardcoded padding spacers in embedded mode
+                const spacers = document.querySelectorAll('div[style*="padding-top: 80px"]');
+                spacers.forEach(s => s.style.paddingTop = '0px');
+                
+                // Highlight active links in embedded navbar
+                const navItems = document.querySelectorAll('.embedded-navbar .embedded-nav-item');
+                navItems.forEach(item => {
+                    const href = item.getAttribute('href');
+                    if (href === currentPath || (href !== '/admin/dashboard' && href !== '/' && currentPath.startsWith(href))) {
+                        item.classList.add('active');
+                    }
+                });
+            } else {
+                // Hide standalone navbar on dashboard in standalone mode
+                if (currentPath === '/admin/dashboard') {
+                    const standaloneNav = document.querySelector('nav.navbar');
+                    if (standaloneNav) {
+                        standaloneNav.style.setProperty('display', 'none', 'important');
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+</body></html>

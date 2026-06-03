@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Payment Dashboard</title>
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div th:replace="~{layout :: layout(~{::section}, ~{::script}, 'payment-dashboard')}">
+        <section>
+            <div class="container-fluid p-0">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4 fade-in-up">
+                    <div>
+                        <h2 class="mb-0 fw-bold text-gradient-primary">Payment Dashboard</h2>
+                        <p class="text-muted mb-0">Overview of payment request activities and action items.</p>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-white shadow-sm" data-bs-toggle="modal"
+                            data-bs-target="#settingsModal">
+                            <i class="fas fa-cog text-muted me-2"></i>Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 1: Key Daily Stats (4 Widgets) -->
+                <div class="row g-4 mb-4 fade-in-up" style="animation-delay: 0.1s;">
+                    <!-- 1. Requests Today -->
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Requests Today</h6>
+                                    <div
+                                        class="avatar-sm bg-light-primary text-primary rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                </div>
+                                <h3 class="fw-bold text-dark mb-0" th:text="${stats.requestsToday}">0</h3>
+                                <small class="text-muted">Submissions received today</small>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 2. Amount Requested Today -->
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h6 class="text-uppercase text-muted small fw-bold mb-0">Requested Today</h6>
+                                    <div
+                                        class="avatar-sm bg-light-info text-info rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </div>
+                                </div>
+                                <h3 class="fw-bold text-dark mb-0" th:text="${'$' + stats.amountRequestedToday}">$0.00
+                                </h3>
+                                <small class="text-muted">Total value of daily requests</small>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 3. Action Items -->
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100 border-start border-4 border-warning">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h6 class="text-uppercase text-muted small fw-bold mb-0">My Action Items</h6>
+                                    <div
+                                        class="avatar-sm bg-light-warning text-warning rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                </div>
+                                <h3 class="fw-bold text-dark mb-0" th:text="${stats.myActionItems}">0</h3>
+                                <small class="text-secondary">Pending requests awaiting review</small>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 4. Urgent Pending -->
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100 border-start border-4 border-danger">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h6 class="text-uppercase text-danger small fw-bold mb-0">Urgent & Pending</h6>
+                                    <div
+                                        class="avatar-sm bg-light-danger text-danger rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                </div>
+                                <h3 class="fw-bold text-danger mb-0" th:text="${stats.urgentPendingRequests}">0</h3>
+                                <small class="text-danger">High priority items needing attention</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 1.5: Financial Deep Dive (4 Widgets) -->
+                <div class="row g-4 mb-4 fade-in-up" style="animation-delay: 0.15s;">
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase text-muted small fw-bold">Paid This Month</h6>
+                                <h4 class="fw-bold text-success mb-0" th:text="${'$' + stats.paidThisMonth}">$0.00</h4>
+                                <small class="text-muted">Month to Date</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase text-muted small fw-bold">Avg Request Size</h6>
+                                <h4 class="fw-bold text-primary mb-0" th:text="${'$' + stats.averageRequestAmount}">
+                                    $0.00</h4>
+                                <small class="text-muted">Historical Average</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h6 class="text-uppercase text-muted small fw-bold">Approved Liability</h6>
+                                <h4 class="fw-bold text-warning mb-0" th:text="${'$' + stats.unpaidApprovedLiability}">
+                                    $0.00</h4>
+                                <small class="text-muted">Approved but Unpaid</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="text-uppercase text-muted small fw-bold">Rejection Rate</h6>
+                                    <span class="badge bg-danger rounded-pill"
+                                        th:text="${#numbers.formatDecimal(stats.rejectionRate, 1, 1) + '%'}">0.0%</span>
+                                </div>
+                                <div class="progress mt-2" style="height: 6px;">
+                                    <div class="progress-bar bg-danger" role="progressbar"
+                                        th:style="'width: ' + ${stats.rejectionRate} + '%'"></div>
+                                </div>
+                                <small class="text-muted mt-2 d-block">Requests Rejected</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Trends (2 Charts) -->
+                <div class="row g-4 mb-4 fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 py-3">
+                                <h6 class="mb-0 fw-bold"><i class="fas fa-chart-line me-2 text-primary"></i>6-Month
+                                    Spending Trend</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 300px;">
+                                    <canvas id="spendingTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 py-3">
+                                <h6 class="mb-0 fw-bold"><i class="fas fa-chart-bar me-2 text-info"></i>6-Month Volume
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 300px;">
+                                    <canvas id="volumeTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Operational Analysis (4 Charts) -->
+                <div class="row g-4 mb-4 fade-in-up" style="animation-delay: 0.25s;">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 pt-3">
+                                <h6 class="small fw-bold text-uppercase text-center">Payment Methods</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 200px;">
+                                    <canvas id="methodChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 pt-3">
+                                <h6 class="small fw-bold text-uppercase text-center">Client Costs</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 200px;">
+                                    <canvas id="clientChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 pt-3">
+                                <h6 class="small fw-bold text-uppercase text-center">Requests by Priority</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 200px;">
+                                    <canvas id="priorityChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 pt-3">
+                                <h6 class="small fw-bold text-uppercase text-center">Payment Status</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 200px;">
+                                    <canvas id="paymentStatusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 4: Leaderboards (3 Tables) -->
+                <div class="row g-4 mb-4 fade-in-up" style="animation-delay: 0.3s;">
+                    <!-- Top Contractors -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div
+                                class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0 fw-bold">Top 5 Contractors</h6>
+                                <span class="badge bg-light text-secondary rounded-pill"
+                                    th:text="${stats.activeContractorsCount + ' Active'}">0 Active</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle mb-0">
+                                    <thead class="bg-light small text-uppercase">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th class="text-end">Total Spend</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="entry : ${stats.topContractors}">
+                                            <td th:text="${entry.key}"></td>
+                                            <td class="text-end fw-bold text-dark" th:text="${'$' + entry.value}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Top Requesters -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 py-3">
+                                <h6 class="mb-0 fw-bold">Top 5 Requesters</h6>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle mb-0">
+                                    <thead class="bg-light small text-uppercase">
+                                        <tr>
+                                            <th>User</th>
+                                            <th class="text-end">Requests</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="entry : ${stats.topRequesters}">
+                                            <td th:text="${entry.key}"></td>
+                                            <td class="text-end fw-bold text-primary" th:text="${entry.value}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- High Value Requests -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-transparent border-0 py-3">
+                                <h6 class="mb-0 fw-bold text-danger"
+                                    th:text="'High Value Ops (> $' + ${stats.highValueThreshold} + ')'">High Value Ops
+                                    (> $1k)</h6>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle mb-0">
+                                    <thead class="bg-light small text-uppercase">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Date</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="req : ${stats.highValueRequests}">
+                                            <td><a th:href="@{/payment-requests/{id}(id=${req.id})}"
+                                                    th:text="${'#'+req.id}" class="text-decoration-none fw-bold"></a>
+                                            </td>
+                                            <td th:text="${req.requestDate}"></td>
+                                            <td class="text-end fw-bold text-danger" th:text="${'$' + req.amount}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 5: Recent Activity (Table) -->
+                <div class="card border-0 shadow-sm fade-in-up" style="animation-delay: 0.35s;">
+                    <div
+                        class="card-header bg-transparent border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 fw-bold text-primary"><i class="fas fa-history me-2"></i>Recent Activity</h6>
+                        <a href="/payment-requests" class="btn btn-sm btn-light rounded-pill">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light small text-uppercase text-secondary">
+                                    <tr>
+                                        <th class="ps-4">ID</th>
+                                        <th>Date</th>
+                                        <th>Requester</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-4">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="req : ${stats.recentActivity}">
+                                        <td class="ps-4 fw-bold" th:text="${'#' + req.id}"></td>
+                                        <td th:text="${req.requestDate}"></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-xs bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-2"
+                                                    style="width: 24px; height: 24px;">
+                                                    <i class="fas fa-user" style="font-size: 0.7rem;"></i>
+                                                </div>
+                                                <span
+                                                    th:text="${req.requester != null ? req.requester.username : (req.employeeRequester != null ? req.employeeRequester.name : 'Unknown')}"
+                                                    class="small fw-medium"></span>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold text-dark" th:text="${'$' + req.amount}"></td>
+                                        <td>
+                                            <span th:text="${req.status}"
+                                                th:class="${'badge rounded-pill ' + 
+                                                (req.status.name() == 'APPROVED' ? 'bg-success' : 
+                                                (req.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-warning text-dark'))}">
+                                            </span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <a th:href="@{/payment-requests/{id}(id=${req.id})}"
+                                                class="btn btn-sm btn-icon btn-light">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(stats.recentActivity)}">
+                                        <td colspan="6" class="text-center py-4 text-muted">No recent activity found.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Modal -->
+                <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form th:action="@{/admin/payment-dashboard/settings}" method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="settingsModalLabel">Dashboard Settings</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="highValueThreshold" class="form-label">High Value Request Threshold
+                                            ($)</label>
+                                        <input type="number" class="form-control" id="highValueThreshold"
+                                            name="highValueThreshold" th:value="${stats.highValueThreshold}" required
+                                            min="0" step="100">
+                                        <div class="form-text">Requests above this amount will appear in the "High Value
+                                            Ops" table.</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="reviewUpdateLimit" class="form-label">Review Update Limit (Max
+                                            Updates)</label>
+                                        <input type="number" class="form-control" id="reviewUpdateLimit"
+                                            name="reviewUpdateLimit" th:value="${stats.reviewUpdateLimit}" required
+                                            min="1" max="20">
+                                        <div class="form-text">Maximum number of status updates allowed for HR and
+                                            Supervisors.</div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                // Common Chart Options
+                const commonOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15 } } }
+                };
+
+                // --- 1. Spending Trend (Line) ---
+                var spendingData = /*[[${stats.monthlySpendingTrend}]]*/ {};
+                new Chart(document.getElementById('spendingTrendChart'), {
+                    type: 'line',
+                    data: {
+                        labels: Object.keys(spendingData),
+                        datasets: [{
+                            label: 'Approved Spend ($)',
+                            data: Object.values(spendingData),
+                            borderColor: '#4e73df',
+                            backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: { ...commonOptions, scales: { y: { beginAtZero: true } } }
+                });
+
+                // --- 2. Volume Trend (Bar) ---
+                var volumeData = /*[[${stats.monthlyVolumeTrend}]]*/ {};
+                new Chart(document.getElementById('volumeTrendChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(volumeData),
+                        datasets: [{
+                            label: 'Total Requests',
+                            data: Object.values(volumeData),
+                            backgroundColor: '#36b9cc',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { ...commonOptions, scales: { y: { beginAtZero: true } } }
+                });
+
+                // --- 3. Payment Methods (Pie) ---
+                var methodData = /*[[${stats.paymentMethodDistribution}]]*/ {};
+                new Chart(document.getElementById('methodChart'), {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(methodData),
+                        datasets: [{
+                            data: Object.values(methodData),
+                            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: commonOptions
+                });
+
+                // --- 4. Client Costs (Doughnut) ---
+                var clientData = /*[[${stats.clientCostDistribution}]]*/ {};
+                new Chart(document.getElementById('clientChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(clientData),
+                        datasets: [{
+                            data: Object.values(clientData),
+                            backgroundColor: ['#6f42c1', '#fd7e14', '#0dcaf0', '#20c997', '#e83e8c'],
+                            borderWidth: 0,
+                            cutout: '60%'
+                        }]
+                    },
+                    options: commonOptions
+                });
+
+                // --- 5. Priority (Bar) ---
+                var priorityData = /*[[${stats.priorityDistribution}]]*/ {};
+                new Chart(document.getElementById('priorityChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(priorityData),
+                        datasets: [{
+                            label: 'Count',
+                            data: Object.values(priorityData),
+                            backgroundColor: ['#858796', '#4e73df', '#f6c23e', '#e74a3b'], // Low(Gray), Normal(Blue), High(Yellow), Urgent(Red)
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { ...commonOptions, indexAxis: 'y', plugins: { legend: { display: false } } }
+                });
+
+                // --- 6. Payment Status (Bar) ---
+                var payStatusData = /*[[${stats.paymentStatusDistribution}]]*/ {};
+                new Chart(document.getElementById('paymentStatusChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(payStatusData),
+                        datasets: [{
+                            label: 'Count',
+                            data: Object.values(payStatusData),
+                            backgroundColor: ['#1cc88a', '#f6c23e', '#e74a3b', '#858796'], // PAID, UNPAID...
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { ...commonOptions, plugins: { legend: { display: false } } }
+                });
+
+            });
+        </script>
+    </div>
+</body>
+
+</html>

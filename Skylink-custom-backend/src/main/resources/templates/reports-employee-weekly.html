@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Academic Member Weekly Detail - Attendance System</title>
+</head>
+
+<body>
+    <div th:replace="~{layout :: layout(~{::section}, ~{}, 'reports-weekly')}">
+        <section>
+            <div class="container-fluid mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Academic Member Weekly Detail</h2>
+                    <!-- Multi-Format Export -->
+                    <div class="dropdown d-inline-block ms-auto align-top">
+                        <button class="btn btn-dark dropdown-toggle" type="button" id="exportDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download me-1"></i> Export
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <li>
+                                <a class="dropdown-item"
+                                    th:href="@{/reports/weekly/{id}/pdf(id=${report.employeeId}, date=${startOfWeek})}">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i> PDF
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                    th:href="@{/reports/weekly/{id}/excel(id=${report.employeeId}, date=${startOfWeek})}">
+                                    <i class="fas fa-file-excel text-success me-2"></i> Excel
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                    th:href="@{/reports/weekly/{id}/csv(id=${report.employeeId}, date=${startOfWeek})}">
+                                    <i class="fas fa-file-csv text-primary me-2"></i> CSV
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="/reports/weekly" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Weekly Report
+                    </a>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="mb-0" th:text="${report.employeeName}">Academic Member Name</h4>
+                                <div class="text-muted small">
+                                    ID: <span th:text="${report.employeeId}">123</span> |
+                                    Dept: <span th:text="${report.departmentName}">Engineering</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-muted small">Week of</div>
+                                <strong th:text="${report.startOfWeek}">2024-01-01</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Day</th>
+                                    <th>In Time</th>
+                                    <th>Out Time</th>
+                                    <th>Late By</th>
+                                    <th>Early By</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="day : ${report.dailyDetails}">
+                                    <td th:text="${day.date}">2024-01-01</td>
+                                    <td th:text="${day.dayOfWeek}">MONDAY</td>
+
+                                    <td th:text="${day.inTime != null ? day.inTime : '-'}">09:00</td>
+                                    <td th:text="${day.outTime != null ? day.outTime : '-'}">18:00</td>
+
+                                    <td>
+                                        <span th:if="${day.lateDurationMinutes > 0}" class="text-danger"
+                                            th:text="${day.lateDurationMinutes} + ' min'">15 min</span>
+                                        <span th:if="${day.lateDurationMinutes == 0}">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${day.earlyLeaveDurationMinutes > 0}" class="text-info"
+                                            th:text="${day.earlyLeaveDurationMinutes} + ' min'">10 min</span>
+                                        <span th:if="${day.earlyLeaveDurationMinutes == 0}">-</span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge" th:classappend="'bg-' + ${day.statusColor}"
+                                            th:text="${day.status}">PRESENT</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="6" class="text-end"><strong>Summary:</strong></td>
+                                    <td>
+                                        <div>Present: <span th:text="${report.totalPresent}">5</span></div>
+                                        <div>Absent: <span th:text="${report.totalAbsent}">0</span></div>
+                                        <div class="text-warning" th:if="${report.totalLates > 0}">
+                                            Lates: <span th:text="${report.totalLates}">1</span>
+                                        </div>
+                                        <div class="text-info" th:if="${report.totalEarlyLeaves > 0}">
+                                            Early: <span th:text="${report.totalEarlyLeaves}">1</span>
+                                        </div>
+                                        <div class="text-primary" th:if="${report.totalLeaves > 0}">
+                                            Leaves: <span th:text="${report.totalLeaves}">1</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>

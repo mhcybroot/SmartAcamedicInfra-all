@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>My Dashboard</title>
+</head>
+
+<body>
+    <div th:replace="~{layout :: layout(~{::section}, ~{::script}, 'dashboard')}">
+        <section>
+            <!-- 1. Hero Header -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                <i class="fas fa-check-circle me-1"></i> <span th:text="${success}">Success</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Live Clock Status Bar -->
+            <div class="d-flex align-items-center justify-content-between px-3 py-2 mb-3"
+                style="background: linear-gradient(135deg, #0d1b2a, #1a3050); border-radius: 10px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span
+                            style="width:10px; height:10px; background:#22c55e; border-radius:50%; display:inline-block; animation:emp-pulse-dot 1.5s infinite;"></span>
+                        <span
+                            style="font-size:0.75rem; font-weight:600; letter-spacing:0.08em; color:#86efac; text-transform:uppercase;">Online</span>
+                    </div>
+                    <div style="width:1px; height:24px; background:rgba(255,255,255,0.15);"></div>
+                    <span id="emp-status-date" style="font-size:0.8rem; color:#94a3b8; font-weight:500;"></span>
+                </div>
+                <span id="emp-status-clock"
+                    style="font-size:1.2rem; font-weight:700; letter-spacing:0.05em; font-variant-numeric:tabular-nums;"></span>
+            </div>
+            <style>
+                @keyframes emp-pulse-dot {
+                    0% {
+                        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+                    }
+
+                    70% {
+                        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+                    }
+
+                    100% {
+                        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+                    }
+                }
+            </style>
+            <script>
+                (function () {
+                    const TZ = 'Etc/GMT+5';
+                    function updateEmpClock() {
+                        const now = new Date();
+                        const t = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(now);
+                        document.getElementById('emp-status-clock').textContent =
+                            t.find(p => p.type === 'hour').value + ':' + t.find(p => p.type === 'minute').value + ':' + t.find(p => p.type === 'second').value;
+                        document.getElementById('emp-status-date').textContent =
+                            new Intl.DateTimeFormat('en-US', { timeZone: TZ, weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(now) + ' • ET';
+                    }
+                    updateEmpClock();
+                    setInterval(updateEmpClock, 1000);
+                })();
+            </script>
+
+            <div class="card bg-primary text-white shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1 fw-bold" th:text="${'Welcome back, ' + employee.name}">Welcome back, User
+                            </h5>
+                            <p class="mb-0 opacity-75 small">
+                                <i class="fas fa-id-badge me-1"></i> <span th:text="${employee.id}">ID</span> &bull;
+                                <i class="fas fa-building me-1 ms-2"></i> <span
+                                    th:text="${employee.department != null ? employee.department.name : 'Unassigned'}">Dept</span>
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <div class="bg-white text-dark p-3 rounded shadow-sm d-inline-block text-start"
+                                style="min-width: 200px;">
+                                <small class="text-uppercase text-muted fw-bold d-block mb-1"
+                                    style="font-size: 0.7rem;">Today's Shift</small>
+                                <div th:if="${workSchedule != null}">
+                                    <h6 class="mb-0 fw-bold text-primary"
+                                        th:text="${workSchedule.startTime + ' - ' + workSchedule.endTime}">09:00 - 18:00
+                                    </h6>
+                                    <small class="text-muted d-block mt-1">
+                                        Tolerance: <span th:text="${workSchedule.lateToleranceMinutes}">15</span>m
+                                    </small>
+                                </div>
+                                <div th:if="${workSchedule == null}">
+                                    <h5 class="mb-0">Standard Shift</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Status -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 bg-white">
+                        <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <h6 class="mb-1 fw-bold text-dark"><i class="fas fa-briefcase me-2 text-primary"></i>
+                                    Current Status:
+                                    <span class="text-primary" th:text="${dailyStatus.status}">LOGGED_IN</span>
+                                </h6>
+                                <p class="text-muted mb-0 small" th:if="${dailyStatus.status.name() == 'NOT_ENTERED'}">
+                                    <i class="fas fa-exclamation-triangle text-warning me-1"></i> Please punch your card
+                                    at the office machine before starting work.
+                                </p>
+                                <p class="text-muted mb-0 small" th:if="${dailyStatus.status.name() == 'ENDED_WORK'}">
+                                    <i class="fas fa-info-circle text-info me-1"></i> Shift Ended! Please don't forget
+                                    to punch out at the machine within 30 minutes.
+                                </p>
+                            </div>
+                            <div class="d-flex gap-2 mt-3 mt-md-0">
+                                <form action="/employee/work-status/start-work" method="post"
+                                    th:if="${dailyStatus.status.name() == 'LOGGED_IN' or dailyStatus.status.name() == 'ENTERED_OFFICE'}">
+                                    <button type="submit" class="btn btn-success fw-bold px-4 rounded-pill shadow-sm"><i
+                                            class="fas fa-play me-2"></i>Start Work</button>
+                                </form>
+                                <form action="/employee/work-status/start-break" method="post"
+                                    th:if="${dailyStatus.status.name() == 'WORKING'}">
+                                    <button type="submit"
+                                        class="btn btn-warning text-dark fw-bold px-4 rounded-pill shadow-sm"><i
+                                            class="fas fa-coffee me-2"></i>Take Break</button>
+                                </form>
+                                <form action="/employee/work-status/end-work" method="post"
+                                    th:if="${dailyStatus.status.name() == 'WORKING'}">
+                                    <button type="submit" class="btn btn-danger fw-bold px-4 rounded-pill shadow-sm"><i
+                                            class="fas fa-stop me-2"></i>End Work</button>
+                                </form>
+                                <form action="/employee/work-status/restart-work" method="post"
+                                    th:if="${dailyStatus.status.name() == 'ON_BREAK'}">
+                                    <button type="submit" class="btn btn-primary fw-bold px-4 rounded-pill shadow-sm"><i
+                                            class="fas fa-play-circle me-2"></i>Restart Work</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workday Countdown Widget -->
+            <div class="row mb-4" th:if="${workSchedule != null}">
+                <div class="col-12">
+                    <div class="card bg-white shadow-sm border-0 position-relative overflow-hidden">
+                        <div class="card-body text-center p-4">
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                <i class="fas fa-hourglass-half text-primary fa-lg me-2"></i>
+                                <h6 class="text-muted text-uppercase fw-bold mb-0">Shift Countdown</h6>
+                            </div>
+
+                            <!-- Timer Display -->
+                            <!-- Timer Display -->
+                            <div id="countdown-display" class="fs-4 fw-bold text-dark my-2"
+                                th:data-status="${dailyStatus.status.name()}"
+                                th:data-work-start="${dailyStatus.workStartTime != null ? dailyStatus.workStartTime : ''}"
+                                th:data-break-start="${dailyStatus.currentBreakStartTime != null ? dailyStatus.currentBreakStartTime : ''}"
+                                th:data-total-break-secs="${dailyStatus.totalBreakSeconds}">
+                                --:--:--
+                            </div>
+
+                            <!-- Dynamic Subtext -->
+                            <p id="countdown-subtext" class="text-muted mb-0 fst-italic">Calculating time remaining...
+                            </p>
+
+                            <!-- Progress Bar -->
+                            <div class="progress mt-3" style="height: 6px;">
+                                <div id="countdown-progress"
+                                    class="progress-bar bg-primary progress-bar-striped progress-bar-animated"
+                                    role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Shared Resources -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <!-- My Shared Resources Widget -->
+                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden mb-4">
+                        <div
+                            class="card-header bg-gradient bg-primary text-white border-bottom-0 py-4 d-flex align-items-center">
+                            <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm me-3"
+                                style="width: 48px; height: 48px;">
+                                <i class="fas fa-key fa-lg"></i>
+                            </div>
+                            <h6 class="mb-0 fw-bold">My Shared Resources</h6>
+                        </div>
+                        <div class="card-body bg-light p-4">
+                            <div class="row g-4">
+                                <div class="col-lg-4 col-md-6" th:each="resource : ${sharedResources}">
+                                    <div class="card h-100 border shadow-sm rounded-4">
+                                        <div class="card-body p-4">
+                                            <!-- Header -->
+                                            <div
+                                                class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4 pb-3 border-bottom border-light gap-2">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex justify-content-center align-items-center me-3 flex-shrink-0"
+                                                        style="width: 42px; height: 42px;">
+                                                        <i class="fas fa-network-wired"></i>
+                                                    </div>
+                                                    <h6 class="card-title fw-bold mb-0 text-dark"
+                                                        th:text="${resource.resourceName}">Portal</h6>
+                                                </div>
+                                                <a th:if="${resource.resourceLink != null and !resource.resourceLink.isEmpty()}"
+                                                    th:href="${resource.resourceLink}" target="_blank"
+                                                    class="btn btn-outline-primary btn-sm rounded-pill shadow-sm px-3 w-100 w-sm-auto"
+                                                    title="Open Link">
+                                                    Open Link <i class="fas fa-external-link-alt ms-1"></i>
+                                                </a>
+                                            </div>
+
+                                            <!-- Credentials -->
+                                            <div class="mb-3">
+                                                <label class="form-label text-muted small fw-bold text-uppercase"><i
+                                                        class="fas fa-user-circle me-1"></i> Username / ID</label>
+                                                <div class="input-group">
+                                                    <input type="text"
+                                                        class="form-control bg-light text-dark fw-bold font-monospace border-end-0"
+                                                        th:value="${resource.loginId}" readonly>
+                                                    <button class="btn border border-start-0 bg-light text-secondary"
+                                                        type="button"
+                                                        onclick="navigator.clipboard.writeText(this.parentElement.querySelector('input').value); this.innerHTML='<i class=\'fas fa-check text-success\'></i>'; setTimeout(() => this.innerHTML='<i class=\'fas fa-copy\'></i>', 2000);"
+                                                        title="Copy ID">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label class="form-label text-muted small fw-bold text-uppercase"><i
+                                                        class="fas fa-lock me-1"></i> Password</label>
+                                                <div class="input-group">
+                                                    <input type="password"
+                                                        class="form-control bg-light text-dark fw-bold font-monospace border-end-0"
+                                                        th:value="${resource.password}" readonly>
+                                                    <button class="btn border border-start-0 bg-light text-secondary"
+                                                        type="button"
+                                                        onclick="let input = this.parentElement.querySelector('input'); if (input.type === 'password') { input.type = 'text'; this.innerHTML = '<i class=\'fas fa-eye-slash\'></i>'; } else { input.type = 'password'; this.innerHTML = '<i class=\'fas fa-eye\'></i>'; }"
+                                                        title="Toggle Visibility">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn border border-start-0 bg-light text-secondary"
+                                                        type="button"
+                                                        onclick="navigator.clipboard.writeText(this.parentElement.querySelector('input').value); this.innerHTML='<i class=\'fas fa-check text-success\'></i>'; setTimeout(() => this.innerHTML='<i class=\'fas fa-copy\'></i>', 2000);"
+                                                        title="Copy Password">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div class="col-12" th:if="${#lists.isEmpty(sharedResources)}">
+                                <div class="card border-0 bg-white shadow-sm rounded-4 p-5 text-center">
+                                    <div class="mb-4">
+                                        <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle text-muted"
+                                            style="width: 100px; height: 100px;">
+                                            <i class="fas fa-folder-open fa-3x"></i>
+                                        </div>
+                                    </div>
+                                    <h4 class="fw-bold text-dark mb-2">No Shared Resources Found</h4>
+                                    <p class="text-muted mb-0 mx-auto" style="max-width: 400px;">Your administrator has
+                                        not shared any system portals or secure credentials with you yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JavaScript for Countdown -->
+            <script th:inline="javascript">
+                document.addEventListener('DOMContentLoaded', function () {
+                    const display = document.getElementById('countdown-display');
+                    if (!display) return;
+
+                    const status = display.getAttribute('data-status');
+                    const workStartStr = display.getAttribute('data-work-start');
+                    const breakStartStr = display.getAttribute('data-break-start');
+                    const totalBreakSecs = parseInt(display.getAttribute('data-total-break-secs') || "0");
+
+                    const progressBar = document.getElementById('countdown-progress');
+                    const subtext = document.getElementById('countdown-subtext');
+
+                    function updateTimer() {
+                        const now = new Date();
+
+                        // Handle formatting display helper
+                        function formatTime(diffMs) {
+                            if (diffMs < 0) return "00:00:00";
+                            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+                            return (hours < 10 ? "0" + hours : hours) + ":" +
+                                (minutes < 10 ? "0" + minutes : minutes) + ":" +
+                                (seconds < 10 ? "0" + seconds : seconds);
+                        }
+
+                        if (status === 'NOT_ENTERED' || status === 'ENTERED_OFFICE' || status === 'LOGGED_IN') {
+                            display.textContent = "Standby";
+                            subtext.textContent = "Start work to begin your 8-hour shift countdown!";
+                            progressBar.style.width = '0%';
+                            return;
+                        }
+
+                        if (status === 'ENDED_WORK' || status === 'LEFT_WITHOUT_PUNCH' || status === 'COMPLETED_DAY') {
+                            display.textContent = "Shift Ended";
+                            subtext.textContent = "Great work today! Go enjoy your evening.";
+                            display.classList.add('text-success');
+                            progressBar.style.width = '100%';
+                            progressBar.classList.add('bg-success');
+                            return;
+                        }
+
+                        if (status === 'ON_BREAK') {
+                            // Break timer counts UP since break started + previously saved breaks
+                            if (!breakStartStr) return;
+                            // Append UTC-5 offset so browser parses as fixed UTC-5 regardless of local TZ
+                            const breakStart = new Date(breakStartStr.replace('T', 'T').trim() + '-05:00');
+                            let breakElapsed = now - breakStart;
+
+                            // Add previously accumulated break time
+                            let previousBreakMs = totalBreakSecs * 1000;
+                            let totalBreakElapsed = breakElapsed + previousBreakMs;
+
+                            display.textContent = formatTime(totalBreakElapsed);
+                            subtext.textContent = "You are currently on break. Timer is pausing shift.";
+                            display.classList.add('text-warning');
+                            progressBar.classList.add('bg-warning');
+                            // Keep progress bar stuck where it was
+                            return;
+                        }
+
+                        if (status === 'WORKING') {
+                            if (!workStartStr) return;
+                            // Append UTC-5 offset so browser parses as fixed UTC-5 regardless of local TZ
+                            const workStart = new Date(workStartStr.trim() + '-05:00');
+
+                            // Target is 8 hours (8 * 60 * 60 * 1000 ms) of ACTIVE working time.
+                            const eightHoursMs = 8 * 60 * 60 * 1000;
+                            const breakMs = totalBreakSecs * 1000;
+
+                            // Active working time so far = Elapsed wall clock time MINUS total break time
+                            let activeMs = (now - workStart) - breakMs;
+                            let remainingMs = eightHoursMs - activeMs;
+
+                            if (remainingMs > 0) {
+                                display.textContent = formatTime(remainingMs);
+                                subtext.textContent = "Time remaining until 8 hours is complete!";
+                                display.classList.add('text-primary');
+                                display.classList.remove('text-warning');
+
+                                let percent = Math.min(100, Math.max(0, (activeMs / eightHoursMs) * 100));
+                                progressBar.style.width = percent + '%';
+                                progressBar.classList.remove('bg-warning');
+                            } else {
+                                // Overtime
+                                display.textContent = "Target Reached!";
+                                subtext.textContent = "You have completed your 8 hour shift!";
+                                display.classList.add('text-success');
+                                display.classList.remove('text-primary');
+                                progressBar.style.width = '100%';
+                                progressBar.classList.add('bg-success');
+                            }
+                        }
+                    }
+
+                    updateTimer();
+                    setInterval(updateTimer, 1000);
+                });
+            </script>
+
+            <!-- JavaScript for Countdown -->
+            <script th:inline="javascript">
+                // ... existing script ...
+            </script>
+
+            <!-- Holiday Countdown Widget -->
+            <div class="row mb-4" th:if="${nextHoliday != null}">
+                <div class="col-12">
+                    <div class="card text-white shadow-sm border-0 position-relative overflow-hidden"
+                        style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                        <div class="card-body text-center p-4">
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                <i class="fas fa-umbrella-beach fa-2x me-3"></i>
+                                <h5 class="text-uppercase fw-bold mb-0">Upcoming Holiday</h5>
+                            </div>
+
+                            <h5 class="fw-bold my-2" th:text="${daysUntilHoliday + ' Days'}">5 Days</h5>
+                            <p class="mb-0 opacity-75">
+                                until <span th:text="${nextHoliday.name}">New Year</span>
+                                <small class="d-block mt-1" style="font-size: 0.8rem;"
+                                    th:text="${#temporals.format(nextHoliday.date, 'EEEE, dd MMMM yyyy')}">Monday, 01
+                                    January 2024</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Styles for Inspiration Widgets -->
+            <style>
+                .card-header-custom {
+                    background-color: transparent;
+                    border-bottom: 1px solid #e9ecef;
+                    padding: 15px 20px;
+                    font-weight: bold;
+                    font-size: 16px;
+                }
+            </style>
+
+            <!-- Inspiration & Leaderboards -->
+            <div class="row mb-4 mt-4">
+                <!-- Streak Card (Full Width for Impact) -->
+                <div class="col-12 mb-3" th:if="${streakEmployee != null}">
+                    <div class="card bg-gradient-dark text-white shadow"
+                        style="background: linear-gradient(45deg, #212529, #343a40);">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0 text-warning"><i class="fas fa-fire me-2"></i> ON FIRE!</h6>
+                                <p class="mb-0 text-light opacity-75 small">Most Consistent Academic Member this Month</p>
+                            </div>
+                            <div class="text-end">
+                                <h6 class="mb-0" th:text="${streakEmployee.employeeName}">John Doe</h6>
+                                <span class="badge bg-warning text-dark"
+                                    th:text="${streakEmployee.presentCount + ' Days Present'}">20 Days Present</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leaderboards and Stats -->
+                <div class="col-lg-4 mb-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header-custom text-primary bg-white">
+                            <i class="fas fa-star me-2"></i> Punctuality Stars
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center border-0"
+                                    th:each="star, stat : ${punctualityStars}">
+                                    <div>
+                                        <span class="badge bg-primary rounded-pill me-2"
+                                            th:text="${stat.count}">1</span>
+                                        <span th:text="${star.employeeName}">John Doe</span>
+                                    </div>
+                                    <span class="small text-muted" th:text="${star.presentCount + ' Days'}">20
+                                        Days</span>
+                                </li>
+                                <li class="list-group-item text-center text-muted border-0"
+                                    th:if="${punctualityStars.isEmpty()}">No Data</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header-custom text-success bg-white">
+                            <i class="fas fa-sun me-2"></i> Early Birds (Today)
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center border-0"
+                                    th:each="bird, stat : ${earlyBirds}">
+                                    <div>
+                                        <span class="badge bg-success rounded-pill me-2"
+                                            th:text="${stat.count}">1</span>
+                                        <span th:text="${bird.employeeName}">Jane Smith</span>
+                                    </div>
+                                    <span class="small text-muted"
+                                        th:text="${#temporals.format(bird.inTime, 'HH:mm')}">08:00</span>
+                                </li>
+                                <li class="list-group-item text-center text-muted border-0"
+                                    th:if="${earlyBirds.isEmpty()}">No Arrivals Yet</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header-custom text-info bg-white">
+                            <i class="fas fa-trophy me-2"></i> Champions & Health
+                        </div>
+                        <div class="card-body">
+                            <!-- Dept Champion -->
+                            <div class="mb-4 text-center">
+                                <h6 class="text-muted text-uppercase small fw-bold mb-3">Department Champion</h6>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-medal fa-2x text-info me-3"></i>
+                                    <div class="text-start">
+                                        <h6 class="mb-0 fw-bold" th:text="${championDept}">IT</h6>
+                                        <div class="small text-muted"><span th:text="${championPercent}">95</span>%
+                                            Present Today</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <!-- Health Score -->
+                            <div class="text-center">
+                                <h6 class="text-muted text-uppercase small fw-bold mb-2">Attendance Health</h6>
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar fw-bold" role="progressbar"
+                                        th:style="'width: ' + ${healthScore} + '%'"
+                                        th:classappend="${healthScore > 90 ? 'bg-success' : (healthScore > 70 ? 'bg-warning' : 'bg-danger')}"
+                                        th:text="${healthScore} + '%'" aria-valuemin="0" aria-valuemax="100">85%</div>
+                                </div>
+                                <div class="small text-muted mt-1">Company-wide On-Time %</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Monthly Stats Row -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3 text-success">
+                                <i class="fas fa-check-circle fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted text-uppercase small mb-1">Present</h6>
+                                <h5 class="mb-0 fw-bold" th:text="${daysPresent}">0</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-circle me-3 text-warning">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted text-uppercase small mb-1">Late</h6>
+                                <h5 class="mb-0 fw-bold" th:text="${lateCount}">0</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="bg-danger bg-opacity-10 p-3 rounded-circle me-3 text-danger">
+                                <i class="fas fa-sign-out-alt fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted text-uppercase small mb-1">Early Exit</h6>
+                                <h5 class="mb-0 fw-bold" th:text="${earlyCount}">0</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="bg-info bg-opacity-10 p-3 rounded-circle me-3 text-info">
+                                <i class="fas fa-calendar-minus fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted text-uppercase small mb-1">Leaves</h6>
+                                <h5 class="mb-0 fw-bold" th:text="${leaveCount}">0</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Main Content Split -->
+            <div class="row">
+                <!-- Left: Recent Activity -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div
+                            class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-bold"><i class="fas fa-history text-primary me-2"></i> Recent Activity
+                            </h6>
+                            <a href="/employee/attendance/history"
+                                class="btn btn-sm btn-outline-primary rounded-pill px-3">View All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light text-muted small text-uppercase">
+                                        <tr>
+                                            <th class="ps-4">Date</th>
+                                            <th>Time</th>
+                                            <th>Device ID</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="border-top-0">
+                                        <tr th:each="log : ${recentLogs}">
+                                            <td class="ps-4 fw-bold text-dark"
+                                                th:text="${#temporals.format(log.timestamp, 'dd MMM yyyy')}">01 Jan</td>
+                                            <td class="font-monospace text-primary"
+                                                th:text="${#temporals.format(log.timestamp, 'HH:mm:ss')}">09:00:00</td>
+                                            <td><span class="badge bg-light text-dark border"
+                                                    th:text="${log.deviceId}">1</span></td>
+                                            <td><span
+                                                    class="badge bg-success bg-opacity-75 rounded-pill px-3">Recorded</span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${recentLogs.isEmpty()}">
+                                            <td colspan="4" class="text-center text-muted py-5">
+                                                <i class="fas fa-clipboard mb-3 d-block fa-2x opacity-25"></i>
+                                                No recent attendance logs found.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Profile & Quota -->
+                <div class="col-lg-4 mb-4">
+                    <!-- Profile Card -->
+                    <!-- Profile Card -->
+                    <div class="card shadow-sm mb-4 border-0">
+                        <!-- ... (Keep existing profile card content intact) ... -->
+                        <div class="card-body text-center py-4">
+                            <!-- Avatar Upload Form -->
+                            <form id="avatarForm" action="/employee/profile/upload" method="post"
+                                enctype="multipart/form-data" style="display: none;">
+                                <input type="file" name="file" id="avatarInput" accept="image/*"
+                                    onchange="document.getElementById('avatarForm').submit();">
+                            </form>
+
+                            <!-- Interactive Avatar -->
+                            <div class="position-relative d-inline-block mb-3" style="cursor: pointer;"
+                                onclick="document.getElementById('avatarInput').click();" title="Click to change photo">
+                                <div th:if="${employee.avatarPath != null}"
+                                    class="rounded-circle shadow-sm overflow-hidden"
+                                    style="width: 100px; height: 100px;">
+                                    <img th:src="${employee.avatarPath}" alt="Profile" class="w-100 h-100"
+                                        style="object-fit: cover;">
+                                </div>
+                                <div th:if="${employee.avatarPath == null}"
+                                    class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                    style="width: 100px; height: 100px; font-size: 2.5rem;">
+                                    <span th:text="${#strings.substring(employee.name,0,1)}">U</span>
+                                </div>
+                                <span
+                                    class="position-absolute bottom-0 end-0 bg-light text-primary border border-2 border-white rounded-circle p-1"
+                                    style="font-size: 0.8rem;">
+                                    <i class="fas fa-camera"></i>
+                                </span>
+                            </div>
+
+                            <h5 class="fw-bold mb-1" th:text="${employee.name}">User Name</h5>
+                            <p class="text-muted small mb-0" th:text="${employee.role}">Role</p>
+
+                            <div class="mt-3 pt-2 border-top w-75 mx-auto">
+                                <a href="/employee/change-password"
+                                    class="text-decoration-none small text-muted hover-primary">
+                                    <i class="fas fa-key me-1"></i> Change Password
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advance Salary Widget -->
+                    <div class="card shadow-sm mb-4 border-0">
+                        <div
+                            class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-bold"><i class="fas fa-money-bill-wave text-success me-2"></i> Advance
+                                Salary</h6>
+                            <div>
+                                <button class="btn btn-sm btn-link text-decoration-none me-1"
+                                    th:if="${advanceRequests != null and !advanceRequests.isEmpty()}"
+                                    data-bs-toggle="modal" data-bs-target="#advanceHistoryModal">
+                                    View All
+                                </button>
+                                <button class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal"
+                                    data-bs-target="#advanceModal">
+                                    Request
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${param.advanceRequested}" class="alert alert-success small p-2">
+                                Request submitted!
+                            </div>
+                            <div class="small text-muted text-center"
+                                th:if="${advanceRequests == null or advanceRequests.isEmpty()}">
+                                No active requests.
+                            </div>
+                            <!-- List recent requests if any (Limit 5) -->
+                            <ul class="list-group list-group-flush" th:if="${advanceRequests != null}">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0"
+                                    th:each="req, stat : ${advanceRequests}" th:if="${stat.index < 5}">
+                                    <div>
+                                        <div class="fw-bold" th:text="${'BDT ' + req.amount}">BDT 500</div>
+                                        <small class="text-muted"
+                                            th:text="${#temporals.format(req.requestDate, 'dd MMM')}">Date</small>
+                                    </div>
+                                    <span
+                                        th:class="${'badge ' + (
+                                                req.status.name() == 'APPROVED' ? 'bg-success' : 
+                                                (req.status.name() == 'REJECTED' ? 'bg-danger' : 
+                                                (req.status.name() == 'PAID' ? 'bg-secondary' : 'bg-warning text-dark')))}"
+                                        th:text="${req.status}">PENDING</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <!-- Advance Salary Modal -->
+                <div class="modal fade" id="advanceModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="/advance/request" method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Request Advance Salary</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="employeeId" th:value="${employee.id}">
+                                    <div class="mb-3">
+                                        <label class="form-label">Amount (BDT)</label>
+                                        <input type="number" name="amount" class="form-control" required min="100"
+                                            max="50000">
+                                        <small class="text-muted">Max 50% of salary recommended.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Reason</label>
+                                        <textarea name="reason" class="form-control" rows="3" required
+                                            placeholder="e.g., Medical Emergency"></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-success">Submit Request</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advance History Modal -->
+                <div class="modal fade" id="advanceHistoryModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Advance Salary History</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="ps-3">Date</th>
+                                                <th>Amount</th>
+                                                <th>Reason</th>
+                                                <th>Status</th>
+                                                <th class="pe-3">Note</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="req : ${advanceRequests}">
+                                                <td class="ps-3"
+                                                    th:text="${#temporals.format(req.requestDate, 'dd MMM yyyy')}">
+                                                    Date</td>
+                                                <td class="fw-bold" th:text="${'BDT ' + req.amount}">500</td>
+                                                <td>
+                                                    <span class="d-inline-block text-truncate" style="max-width: 150px;"
+                                                        th:text="${req.reason}" th:title="${req.reason}"
+                                                        data-bs-toggle="tooltip">Reason</span>
+                                                </td>
+                                                <td>
+                                                    <span
+                                                        th:class="${'badge ' + (
+                                                                    req.status.name() == 'APPROVED' ? 'bg-success' : 
+                                                                    (req.status.name() == 'REJECTED' ? 'bg-danger' : 
+                                                                    (req.status.name() == 'PAID' ? 'bg-secondary' : 'bg-warning text-dark')))}"
+                                                        th:text="${req.status}">STATUS</span>
+                                                </td>
+                                                <td class="pe-3 small text-muted" th:text="${req.adminComment}">-
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badges Card -->
+                <div class="card shadow-sm mb-4 border-0" th:if="${!badges.isEmpty()}">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h6 class="mb-0 fw-bold"><i class="fas fa-award text-warning me-2"></i> My Badges</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap justify-content-center gap-3">
+                            <!-- Badge: Iron Man -->
+                            <div th:if="${badges.contains('iron_man')}" class="text-center" data-bs-toggle="tooltip"
+                                title="Iron Man: 20+ Days Present, 0 Late">
+                                <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 mb-1 mx-auto"
+                                    style="width: 60px; height: 60px; display: grid; place-items: center;">
+                                    <i class="fas fa-robot fa-2x"></i>
+                                </div>
+                                <small class="fw-bold d-block" style="font-size: 0.7rem;">Iron Man</small>
+                            </div>
+                            <!-- Badge: Punctual Pro -->
+                            <div th:if="${badges.contains('punctual_pro')}" class="text-center" data-bs-toggle="tooltip"
+                                title="Punctual Pro: 10+ Days Present, 0 Late">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 mb-1 mx-auto"
+                                    style="width: 60px; height: 60px; display: grid; place-items: center;">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                                <small class="fw-bold d-block" style="font-size: 0.7rem;">Punctual</small>
+                            </div>
+                            <!-- Badge: Dedication -->
+                            <div th:if="${badges.contains('dedication')}" class="text-center" data-bs-toggle="tooltip"
+                                title="Dedication: 25+ Days Present">
+                                <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-3 mb-1 mx-auto"
+                                    style="width: 60px; height: 60px; display: grid; place-items: center;">
+                                    <i class="fas fa-heart fa-2x"></i>
+                                </div>
+                                <small class="fw-bold d-block" style="font-size: 0.7rem;">Dedicated</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Annual Leave Quota -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h6 class="mb-0 fw-bold"><i class="fas fa-umbrella-beach text-warning me-2"></i> Annual
+                            Leave Quota</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small">Used</span>
+                            <span class="fw-bold small">
+                                <span th:text="${yearlyLeavesTaken}">5</span> / <span th:text="${annualQuota}">12</span>
+                                Days
+                            </span>
+                        </div>
+                        <div class="progress mb-4" style="height: 10px;">
+                            <div class="progress-bar bg-primary" role="progressbar"
+                                th:style="'width: ' + ${(annualQuota > 0 ? (yearlyLeavesTaken * 100.0 / annualQuota) : 0)} + '%'"
+                                th:aria-valuenow="${yearlyLeavesTaken}" aria-valuemin="0"
+                                aria-valuemax="${annualQuota}"></div>
+                        </div>
+
+                        <div class="row text-center g-2">
+                            <div class="col-6">
+                                <div class="p-2 border rounded bg-light">
+                                    <small class="d-block text-muted text-uppercase" style="font-size: 0.65rem;">Paid
+                                        Taken</small>
+                                    <h5 class="mb-0 fw-bold text-success" th:text="${paidLeavesTaken}">5</h5>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 border rounded bg-light">
+                                    <small class="d-block text-muted text-uppercase" style="font-size: 0.65rem;">Unpaid
+                                        Taken</small>
+                                    <h5 class="mb-0 fw-bold text-danger" th:text="${unpaidLeavesTaken}">0</h5>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+    </div>
+    </section>
+
+    <script>
+        // Scripts
+    </script>
+    </div>
+</body>
+
+</html>

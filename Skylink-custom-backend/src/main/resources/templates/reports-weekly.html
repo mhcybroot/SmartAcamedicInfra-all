@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Weekly Reports - Attendance System</title>
+</head>
+
+<body>
+    <div th:replace="~{layout :: layout(~{::section}, ~{}, 'reports-weekly')}">
+        <section>
+            <style>
+                .status-cell {
+                    text-align: center;
+                    vertical-align: middle;
+                }
+
+                .bg-WEEKEND {
+                    background-color: rgba(16, 185, 129, 0.1);
+                    color: #6ee7b7;
+                }
+
+                .bg-ABSENT {
+                    background-color: #f8d7da;
+                    color: #842029;
+                }
+
+                .bg-LATE {
+                    background-color: #fff3cd;
+                    color: #664d03;
+                }
+
+                .bg-EARLY {
+                    background-color: #cff4fc;
+                    color: #055160;
+                }
+
+                .bg-LATE_EARLY {
+                    background-color: #ffc107;
+                    color: #000;
+                }
+
+                .bg-PRESENT {
+                    background-color: #d1e7dd;
+                    color: #0f5132;
+                }
+
+                .bg-PRESENT {
+                    background-color: #d1e7dd;
+                    color: #0f5132;
+                }
+
+                .bg-LEAVE {
+                    background-color: #cff4fc;
+                    color: #055160;
+                }
+            </style>
+
+            <div class="container-fluid px-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Weekly Attendance Report</h2>
+                    <div>
+                        <a href="/reports" class="btn btn-outline-secondary me-2">Daily View</a>
+                        <a href="/reports/monthly" class="btn btn-outline-secondary me-2">Monthly View</a>
+                        <form action="/reports/weekly" method="get" class="d-inline-flex align-items-center">
+                            <!-- Multi-Select Department Dropdown -->
+                            <div class="dropdown me-2" style="width: auto;">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                    id="deptDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                                    aria-expanded="false">
+                                    Select Departments
+                                </button>
+                                <ul class="dropdown-menu p-3 shadow" aria-labelledby="deptDropdown"
+                                    style="width: 300px; max-height: 400px; overflow-y: auto;">
+                                    <!-- Select All Option -->
+                                    <li class="mb-2 border-bottom pb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAllDepts">
+                                            <label class="form-check-label fw-bold" for="selectAllDepts">
+                                                Select All
+                                            </label>
+                                        </div>
+                                    </li>
+                                    <!-- Department List -->
+                                    <li th:each="dept : ${departments}" class="mb-1">
+                                        <div class="form-check">
+                                            <input class="form-check-input dept-checkbox" type="checkbox"
+                                                name="departmentId" th:value="${dept.id}" th:id="'dept-' + ${dept.id}"
+                                                th:checked="${selectedDept != null and #lists.contains(selectedDept, dept.id)}">
+                                            <label class="form-check-label" th:for="'dept-' + ${dept.id}"
+                                                th:text="${dept.name}">
+                                                IT
+                                            </label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <input type="date" name="date" class="form-control me-2" style="width: auto;"
+                                th:value="${startOfWeek}">
+                            <button type="submit" class="btn btn-primary">View Week</button>
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    function setupMultiSelect(dropdownId, selectAllId, checkboxClass, defaultText, singularItem, pluralItem) {
+                                        const dropdownButton = document.getElementById(dropdownId);
+                                        const selectAllCheckbox = document.getElementById(selectAllId);
+                                        const checkboxes = document.querySelectorAll('.' + checkboxClass);
+
+                                        function updateButtonText() {
+                                            const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+                                            if (selectedCount === 0) {
+                                                dropdownButton.textContent = defaultText;
+                                            } else if (selectedCount === checkboxes.length) {
+                                                dropdownButton.textContent = 'All ' + pluralItem;
+                                            } else {
+                                                dropdownButton.textContent = selectedCount + ' ' + (selectedCount === 1 ? singularItem : pluralItem);
+                                            }
+                                        }
+
+                                        function updateSelectAllState() {
+                                            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                                            const someChecked = Array.from(checkboxes).some(cb => cb.checked);
+                                            selectAllCheckbox.checked = allChecked;
+                                            selectAllCheckbox.indeterminate = someChecked && !allChecked;
+                                            updateButtonText();
+                                        }
+
+                                        selectAllCheckbox.addEventListener('change', function () {
+                                            checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+                                            updateButtonText();
+                                        });
+
+                                        checkboxes.forEach(cb => {
+                                            cb.addEventListener('change', updateSelectAllState);
+                                        });
+
+                                        // Initial check
+                                        updateSelectAllState();
+                                    }
+
+                                    setupMultiSelect('deptDropdown', 'selectAllDepts', 'dept-checkbox', 'Select Departments', 'Department', 'Departments');
+                                });
+                            </script>
+                            <!-- Multi-Format Export -->
+                            <div class="dropdown d-inline-block ms-2">
+                                <button class="btn btn-dark dropdown-toggle" type="button" id="exportDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-download me-1"></i> Export
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                            th:href="@{/reports/weekly/pdf(date=${startOfWeek}, departmentId=${selectedDept})}">
+                                            <i class="fas fa-file-pdf text-danger me-2"></i> PDF
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                            th:href="@{/reports/weekly/excel(date=${startOfWeek}, departmentId=${selectedDept})}">
+                                            <i class="fas fa-file-excel text-success me-2"></i> Excel
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                            th:href="@{/reports/weekly/csv(date=${startOfWeek}, departmentId=${selectedDept})}">
+                                            <i class="fas fa-file-csv text-primary me-2"></i> CSV
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-dark text-center">
+                                    <tr>
+                                        <th style="min-width: 150px;">
+                                            <a class="text-white text-decoration-none"
+                                                th:href="@{/reports/weekly(date=${startOfWeek}, departmentId=${selectedDept}, sortField='name', sortDir=${sortField == 'name' ? reverseSortDir : sortDir})}">
+                                                Academic Member <span th:if="${sortField == 'name'}"
+                                                    th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                            </a>
+                                        </th>
+                                        <th th:each="header : ${headers}" th:text="${header}">Mon 01</th>
+                                        <th>
+                                            Summary
+                                            <div class="d-flex justify-content-center gap-1 mt-1"
+                                                style="font-size: 0.8rem;">
+                                                <a class="text-white text-decoration-none" title="Sort by Present"
+                                                    th:href="@{/reports/weekly(date=${startOfWeek}, departmentId=${selectedDept}, sortField='present', sortDir=${sortField == 'present' ? reverseSortDir : sortDir})}">P</a>
+                                                <a class="text-white text-decoration-none" title="Sort by Absent"
+                                                    th:href="@{/reports/weekly(date=${startOfWeek}, departmentId=${selectedDept}, sortField='absent', sortDir=${sortField == 'absent' ? reverseSortDir : sortDir})}">A</a>
+                                                <a class="text-white text-decoration-none" title="Sort by Late"
+                                                    th:href="@{/reports/weekly(date=${startOfWeek}, departmentId=${selectedDept}, sortField='late', sortDir=${sortField == 'late' ? reverseSortDir : sortDir})}">L</a>
+                                                <span class="text-white" title="Missed Punches">MP</span>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="row : ${report}">
+                                        <td>
+                                            <a th:href="@{/reports/weekly/{id}(id=${row.employeeId}, date=${startOfWeek})}"
+                                                class="text-decoration-none text-dark">
+                                                <strong th:text="${row.employeeName}">John Doe</strong>
+                                            </a>
+                                            <div class="small text-muted" th:text="${row.employeeId}">ID:1</div>
+                                        </td>
+
+                                        <td th:each="date : ${weekDates}" class="status-cell"
+                                            th:classappend="'bg-' + ${row.dailyStatus.get(date)}">
+
+                                            <span th:if="${row.dailyStatus.get(date) == 'PRESENT'}">✅</span>
+                                            <span th:if="${row.dailyStatus.get(date) == 'ABSENT'}">❌</span>
+                                            <span th:if="${row.dailyStatus.get(date) == 'LATE'}">⚠️</span>
+                                            <span th:if="${row.dailyStatus.get(date) == 'EARLY'}">🏃</span>
+                                            <span th:if="${row.dailyStatus.get(date) == 'LATE_EARLY'}">⚠️🏃</span>
+                                            <span th:if="${row.dailyStatus.get(date) == 'WEEKEND'}">🏖️</span>
+                                            <span th:if="${row.dailyStatus.get(date) == 'LEAVE'}">🏥</span>
+
+                                            <!-- Live Work Time Integration -->
+                                            <div th:if="${row.workDetails.get(date) != null}" class="mt-1" style="font-size: 0.70rem; line-height: 1.2;">
+                                                <div class="text-primary fw-bold" th:if="${row.workDetails.get(date).activeWorkDuration != '00h 00m'}" th:text="${row.workDetails.get(date).activeWorkDuration}"></div>
+                                                <div class="text-warning mt-1" th:if="${row.workDetails.get(date).totalBreakDuration != '00h 00m'}" th:text="'☕ ' + ${row.workDetails.get(date).totalBreakDuration}"></div>
+                                            </div>
+                                        </td>
+
+                                        <td class="small">
+                                            <div th:if="${row.presentCount > 0}" class="text-success">P: <span
+                                                    th:text="${row.presentCount}">5</span></div>
+                                            <div th:if="${row.absentCount > 0}" class="text-danger">A: <span
+                                                    th:text="${row.absentCount}">0</span></div>
+                                            <div th:if="${row.lateCount > 0}" class="text-warning">L: <span
+                                                    th:text="${row.lateCount}">1</span></div>
+                                            <div th:if="${row.earlyLeaveCount > 0}" class="text-info">E: <span
+                                                    th:text="${row.earlyLeaveCount}">1</span></div>
+                                            <div th:if="${row.leaveCount > 0}" class="text-primary">LV: <span
+                                                    th:text="${row.leaveCount}">1</span></div>
+                                            <div th:if="${row.totalMissedPunches > 0}" class="text-danger fw-bold">MP: <span
+                                                    th:text="${row.totalMissedPunches}">0</span></div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(report)}">
+                                        <td colspan="9" class="text-center p-4">No data found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:replace="fragments/pagination :: pagination(page=${page}, baseUrl='/reports/weekly')">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>

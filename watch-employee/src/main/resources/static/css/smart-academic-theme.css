@@ -1,0 +1,784 @@
+/* ============================================ */
+/* Smart Academic Infrastructure - Premium Theme */
+/* Color Palette: Emerald Green + Rich Gold      */
+/* Covers: ALL pages across all 3 backends       */
+/* ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --sai-green:        #10b981;
+    --sai-green-dark:   #059669;
+    --sai-green-glow:   rgba(16, 185, 129, 0.25);
+    --sai-gold:         #f59e0b;
+    --sai-gold-dark:    #d97706;
+    --sai-gold-glow:    rgba(245, 158, 11, 0.25);
+    --sai-bg-deep:      #0b1120;
+    --sai-bg-mid:       #0f1e14;
+    --sai-bg-card:      rgba(16, 185, 129, 0.06);
+    --sai-bg-row-alt:   rgba(16, 185, 129, 0.04);
+    --sai-border:       rgba(16, 185, 129, 0.2);
+    --sai-text:         #e2f5ed;
+    --sai-text-muted:   #6ee7b7;
+    --sai-danger:       #f87171;
+    --sai-info:         #38bdf8;
+}
+
+body {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+/* ========================================= */
+/* EMBEDDED MODE — applied to ALL pages      */
+/* ========================================= */
+
+/* ---- Root Background ---- */
+html.embedded-mode,
+html.embedded-mode body,
+html.embedded-mode #wrapper,
+html.embedded-mode .container-fluid {
+    background: linear-gradient(160deg, #0b1120 0%, #0d1f17 60%, #0b1120 100%) !important;
+    color: var(--sai-text) !important;
+}
+
+/* ---- Hide only the top navbar (keep sidebar for navigation) ---- */
+html.embedded-mode nav.navbar,
+html.embedded-mode .topbar,
+html.embedded-mode #topbar {
+    display: none !important;
+}
+
+/* ---- Style the sidebar with dark green theme ---- */
+html.embedded-mode #sidebar-wrapper,
+html.embedded-mode .custom-sidebar {
+    background: linear-gradient(180deg, #071910 0%, #0d2818 100%) !important;
+    border-right: 1px solid rgba(16, 185, 129, 0.2) !important;
+    min-height: 100vh !important;
+}
+html.embedded-mode .sidebar-heading {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.2) !important;
+    color: #10b981 !important;
+    font-weight: 700 !important;
+}
+html.embedded-mode .company-logo-text {
+    color: #10b981 !important;
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.4) !important;
+    font-size: 0.85rem !important;
+}
+
+/* Sidebar nav links */
+html.embedded-mode .list-group-item.toggle-nav-link,
+html.embedded-mode .list-group-item.category-link {
+    background: transparent !important;
+    color: #a7f3d0 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    margin-bottom: 2px !important;
+    transition: all 0.2s ease !important;
+}
+html.embedded-mode .list-group-item.toggle-nav-link:hover,
+html.embedded-mode .list-group-item.category-link:hover {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: #10b981 !important;
+}
+html.embedded-mode .list-group-item.active,
+html.embedded-mode .list-group-item.toggle-nav-link.active,
+html.embedded-mode .category-active {
+    background: linear-gradient(135deg, rgba(16,185,129,0.25), rgba(16,185,129,0.1)) !important;
+    color: #10b981 !important;
+    border-left: 3px solid #10b981 !important;
+    font-weight: 600 !important;
+}
+
+/* Sidebar submenu items */
+html.embedded-mode .submenu-list .nav-link {
+    color: #6ee7b7 !important;
+    font-size: 0.85rem !important;
+    border-radius: 6px !important;
+    padding-left: 8px !important;
+}
+html.embedded-mode .submenu-list .nav-link:hover {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+}
+html.embedded-mode .submenu-list .nav-link.active {
+    color: #f59e0b !important;
+    font-weight: 600 !important;
+    background: rgba(245, 158, 11, 0.08) !important;
+}
+
+/* Sidebar icons */
+html.embedded-mode .menu-icon {
+    color: #10b981 !important;
+    width: 18px !important;
+    margin-right: 8px !important;
+}
+html.embedded-mode .accordion-icon {
+    color: #6ee7b7 !important;
+    font-size: 0.65rem !important;
+}
+
+/* Sidebar divider */
+html.embedded-mode .sidebar-divider {
+    border-top: 1px solid rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Sidebar footer */
+html.embedded-mode .sidebar-footer {
+    background: rgba(0,0,0,0.3) !important;
+    border-top: 1px solid rgba(16, 185, 129, 0.15) !important;
+}
+html.embedded-mode .profile-avatar {
+    background: linear-gradient(135deg, #059669, #10b981) !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Sidebar section labels */
+html.embedded-mode .text-white-50 {
+    color: rgba(110, 231, 183, 0.5) !important;
+}
+
+/* =============================== */
+/* CARDS                           */
+/* =============================== */
+html.embedded-mode .card,
+html.embedded-mode .metric-card {
+    background: rgba(15, 30, 20, 0.85) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid var(--sai-border) !important;
+    border-radius: 14px !important;
+    color: var(--sai-text) !important;
+    box-shadow: 0 4px 24px rgba(16, 185, 129, 0.07), inset 0 1px 0 rgba(16, 185, 129, 0.12) !important;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease !important;
+}
+html.embedded-mode .card:hover,
+html.embedded-mode .metric-card:hover {
+    box-shadow: 0 8px 32px var(--sai-green-glow) !important;
+    transform: translateY(-2px) !important;
+    border-color: var(--sai-green) !important;
+}
+html.embedded-mode .card-body {
+    background: transparent !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .card-header,
+html.embedded-mode .card-header-custom {
+    background: rgba(16, 185, 129, 0.08) !important;
+    border-bottom: 1px solid var(--sai-border) !important;
+    color: var(--sai-green) !important;
+    font-weight: 600 !important;
+}
+html.embedded-mode .card-footer {
+    background: transparent !important;
+    border-top: 1px solid var(--sai-border) !important;
+}
+html.embedded-mode .shadow-sm,
+html.embedded-mode .shadow {
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1) !important;
+}
+
+/* =============================== */
+/* TABLES — CRITICAL FIX           */
+/* =============================== */
+html.embedded-mode .table,
+html.embedded-mode table {
+    color: var(--sai-text) !important;
+    border-color: var(--sai-border) !important;
+}
+html.embedded-mode .table thead,
+html.embedded-mode table thead {
+    background: rgba(16, 185, 129, 0.15) !important;
+}
+html.embedded-mode .table thead th,
+html.embedded-mode table th {
+    color: var(--sai-green) !important;
+    border-color: var(--sai-border) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    font-size: 0.78rem !important;
+    text-transform: uppercase !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+    padding: 12px 16px !important;
+}
+html.embedded-mode .table tbody tr,
+html.embedded-mode table tbody tr {
+    background-color: transparent !important;
+    border-color: rgba(16, 185, 129, 0.08) !important;
+}
+html.embedded-mode .table tbody tr td,
+html.embedded-mode table tbody tr td {
+    background-color: transparent !important;
+    color: var(--sai-text) !important;
+    border-color: rgba(16, 185, 129, 0.08) !important;
+    vertical-align: middle !important;
+    padding: 12px 16px !important;
+}
+/* Kill Bootstrap striped white rows */
+html.embedded-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(16, 185, 129, 0.05) !important;
+    color: var(--sai-text) !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+}
+html.embedded-mode .table-striped > tbody > tr:nth-of-type(even) > * {
+    background-color: transparent !important;
+    color: var(--sai-text) !important;
+    --bs-table-bg: transparent !important;
+}
+html.embedded-mode .table-hover > tbody > tr:hover > * {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    color: var(--sai-text) !important;
+    --bs-table-hover-bg: transparent !important;
+}
+html.embedded-mode .table-dark {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    --bs-table-bg: transparent !important;
+}
+html.embedded-mode .table-responsive {
+    border-radius: 12px !important;
+    border: 1px solid var(--sai-border) !important;
+    overflow: hidden !important;
+}
+/* Fix Bootstrap 5 CSS variable table theming */
+html.embedded-mode .table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(16,185,129,0.05);
+    --bs-table-hover-bg: rgba(16,185,129,0.12);
+    --bs-table-border-color: rgba(16,185,129,0.1);
+    --bs-table-color: var(--sai-text);
+}
+
+/* =============================== */
+/* METRIC NUMBERS & ICONS          */
+/* =============================== */
+html.embedded-mode .metric-info h3,
+html.embedded-mode .metric-card h3 {
+    color: var(--sai-gold) !important;
+    font-weight: 700 !important;
+    text-shadow: 0 0 16px var(--sai-gold-glow) !important;
+}
+html.embedded-mode .metric-info p,
+html.embedded-mode .metric-card p {
+    color: var(--sai-text-muted) !important;
+}
+html.embedded-mode .metric-icon,
+html.embedded-mode .bg-icon-primary,
+html.embedded-mode .bg-icon-info,
+html.embedded-mode .bg-icon-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05)) !important;
+    color: var(--sai-green) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 0 0 12px var(--sai-green-glow) !important;
+}
+html.embedded-mode .bg-icon-warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05)) !important;
+    color: var(--sai-gold) !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+html.embedded-mode .metric-icon i,
+html.embedded-mode .bg-icon-primary i,
+html.embedded-mode .bg-icon-success i,
+html.embedded-mode .bg-icon-info i {
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .bg-icon-warning i {
+    color: var(--sai-gold) !important;
+}
+
+/* =============================== */
+/* MODALS                          */
+/* =============================== */
+html.embedded-mode .modal-content {
+    background: #0f1e14 !important;
+    border: 1px solid var(--sai-border) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 40px var(--sai-green-glow) !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .modal-header {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-bottom: 1px solid var(--sai-border) !important;
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .modal-title {
+    color: var(--sai-green) !important;
+    font-weight: 600 !important;
+}
+html.embedded-mode .modal-body {
+    background: transparent !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .modal-footer {
+    background: transparent !important;
+    border-top: 1px solid var(--sai-border) !important;
+}
+html.embedded-mode .modal-backdrop {
+    background-color: rgba(0,0,0,0.7) !important;
+}
+html.embedded-mode .btn-close {
+    filter: invert(1) !important;
+    opacity: 0.6 !important;
+}
+
+/* =============================== */
+/* FORMS & INPUTS                  */
+/* =============================== */
+html.embedded-mode .form-control,
+html.embedded-mode .form-select,
+html.embedded-mode input[type="text"],
+html.embedded-mode input[type="email"],
+html.embedded-mode input[type="password"],
+html.embedded-mode input[type="number"],
+html.embedded-mode input[type="date"],
+html.embedded-mode textarea,
+html.embedded-mode select {
+    background-color: rgba(16, 185, 129, 0.06) !important;
+    border: 1px solid var(--sai-border) !important;
+    color: var(--sai-text) !important;
+    border-radius: 8px !important;
+}
+html.embedded-mode .form-control:focus,
+html.embedded-mode .form-select:focus,
+html.embedded-mode input:focus,
+html.embedded-mode textarea:focus,
+html.embedded-mode select:focus {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    box-shadow: 0 0 0 3px var(--sai-green-glow) !important;
+    border-color: var(--sai-green) !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .form-control::placeholder,
+html.embedded-mode textarea::placeholder,
+html.embedded-mode input::placeholder {
+    color: rgba(110, 231, 183, 0.4) !important;
+}
+html.embedded-mode .form-label,
+html.embedded-mode label {
+    color: var(--sai-text-muted) !important;
+    font-weight: 500 !important;
+}
+html.embedded-mode .form-select option {
+    background: #0f1e14 !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .input-group-text {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    border-color: var(--sai-border) !important;
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .input-group-text.bg-dark {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .form-check-input {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    border-color: var(--sai-border) !important;
+}
+html.embedded-mode .form-check-input:checked {
+    background-color: var(--sai-green) !important;
+    border-color: var(--sai-green) !important;
+}
+
+/* =============================== */
+/* BUTTONS                         */
+/* =============================== */
+html.embedded-mode .btn-primary {
+    background: linear-gradient(135deg, var(--sai-green), var(--sai-green-dark)) !important;
+    border-color: var(--sai-green) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 14px var(--sai-green-glow) !important;
+}
+html.embedded-mode .btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5) !important;
+}
+html.embedded-mode .btn-secondary {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .btn-success {
+    background: linear-gradient(135deg, var(--sai-green), var(--sai-green-dark)) !important;
+    border-color: var(--sai-green) !important;
+    box-shadow: 0 4px 12px var(--sai-green-glow) !important;
+}
+html.embedded-mode .btn-warning {
+    background: linear-gradient(135deg, var(--sai-gold), var(--sai-gold-dark)) !important;
+    border-color: var(--sai-gold) !important;
+    color: #1a0e00 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px var(--sai-gold-glow) !important;
+}
+html.embedded-mode .btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    border-color: #ef4444 !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+}
+html.embedded-mode .btn-info {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+    border-color: #0ea5e9 !important;
+    color: #fff !important;
+}
+html.embedded-mode .btn-dark {
+    background: rgba(255,255,255,0.06) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .btn-outline-primary {
+    color: var(--sai-green) !important;
+    border-color: var(--sai-green) !important;
+}
+html.embedded-mode .btn-outline-primary:hover {
+    background: var(--sai-green) !important;
+    color: #fff !important;
+}
+html.embedded-mode .btn-outline-secondary {
+    color: var(--sai-text-muted) !important;
+    border-color: var(--sai-border) !important;
+}
+html.embedded-mode .btn-outline-secondary:hover {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .btn-outline-dark {
+    color: var(--sai-text-muted) !important;
+    border-color: var(--sai-border) !important;
+}
+html.embedded-mode .btn-outline-dark:hover {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .btn-outline-info {
+    color: var(--sai-info) !important;
+    border-color: var(--sai-info) !important;
+}
+html.embedded-mode .btn-outline-success {
+    color: var(--sai-green) !important;
+    border-color: var(--sai-green) !important;
+}
+html.embedded-mode .btn-outline-success:hover {
+    background: var(--sai-green) !important;
+    color: #fff !important;
+}
+
+/* =============================== */
+/* BADGES                          */
+/* =============================== */
+html.embedded-mode .badge.bg-primary,
+html.embedded-mode .badge.bg-success {
+    background: linear-gradient(135deg, var(--sai-green), var(--sai-green-dark)) !important;
+    box-shadow: 0 2px 8px var(--sai-green-glow) !important;
+    color: #fff !important;
+}
+html.embedded-mode .badge.bg-warning {
+    background: linear-gradient(135deg, var(--sai-gold), var(--sai-gold-dark)) !important;
+    color: #1a0e00 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 8px var(--sai-gold-glow) !important;
+}
+html.embedded-mode .badge.bg-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+html.embedded-mode .badge.bg-info {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+    color: #fff !important;
+}
+html.embedded-mode .badge.bg-secondary {
+    background: rgba(255,255,255,0.12) !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .badge.bg-light {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: var(--sai-green) !important;
+    border: 1px solid var(--sai-border) !important;
+}
+html.embedded-mode .badge.text-dark {
+    color: #0b1120 !important;
+}
+html.embedded-mode .badge.text-bg-success {
+    background: var(--sai-green) !important;
+    color: #fff !important;
+}
+
+/* =============================== */
+/* LIST GROUPS                     */
+/* =============================== */
+html.embedded-mode .list-group-item {
+    background-color: transparent !important;
+    color: var(--sai-text) !important;
+    border-color: rgba(16, 185, 129, 0.12) !important;
+}
+html.embedded-mode .list-group-item:hover,
+html.embedded-mode .list-group-item-action:hover {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .list-group-item.active {
+    background: linear-gradient(135deg, var(--sai-green), var(--sai-green-dark)) !important;
+    border-color: var(--sai-green) !important;
+    color: #fff !important;
+}
+html.embedded-mode .list-group-item-action {
+    background: transparent !important;
+    color: var(--sai-text) !important;
+}
+
+/* =============================== */
+/* DROPDOWNS                       */
+/* =============================== */
+html.embedded-mode .dropdown-menu {
+    background: #0f1e14 !important;
+    border: 1px solid var(--sai-border) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    border-radius: 10px !important;
+}
+html.embedded-mode .dropdown-item {
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .dropdown-item:hover {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .dropdown-divider {
+    border-color: var(--sai-border) !important;
+}
+
+/* =============================== */
+/* TEXT COLORS                     */
+/* =============================== */
+html.embedded-mode h1, html.embedded-mode h2, html.embedded-mode h3,
+html.embedded-mode h4, html.embedded-mode h5, html.embedded-mode h6 {
+    color: var(--sai-text) !important;
+}
+html.embedded-mode p, html.embedded-mode span:not(.badge),
+html.embedded-mode li, html.embedded-mode div {
+    color: inherit;
+}
+html.embedded-mode .text-muted {
+    color: var(--sai-text-muted) !important;
+}
+html.embedded-mode .text-dark {
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .text-white {
+    color: #fff !important;
+}
+html.embedded-mode .text-primary {
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .text-success {
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .text-warning {
+    color: var(--sai-gold) !important;
+    text-shadow: 0 0 10px var(--sai-gold-glow) !important;
+}
+html.embedded-mode .text-info {
+    color: var(--sai-info) !important;
+}
+html.embedded-mode .text-danger {
+    color: var(--sai-danger) !important;
+}
+html.embedded-mode .text-secondary {
+    color: var(--sai-text-muted) !important;
+}
+
+/* =============================== */
+/* BACKGROUNDS                     */
+/* =============================== */
+html.embedded-mode .bg-white,
+html.embedded-mode .bg-light {
+    background: rgba(16, 185, 129, 0.04) !important;
+    color: var(--sai-text) !important;
+}
+html.embedded-mode .bg-dark {
+    background: rgba(0,0,0,0.4) !important;
+}
+html.embedded-mode .bg-primary {
+    background: var(--sai-green) !important;
+}
+html.embedded-mode .bg-success {
+    background: var(--sai-green) !important;
+}
+html.embedded-mode .bg-warning {
+    background: var(--sai-gold) !important;
+}
+html.embedded-mode .bg-danger {
+    background: #ef4444 !important;
+}
+html.embedded-mode .bg-info {
+    background: #0ea5e9 !important;
+}
+html.embedded-mode .bg-secondary {
+    background: rgba(255,255,255,0.08) !important;
+}
+
+/* =============================== */
+/* BORDERS & DIVIDERS              */
+/* =============================== */
+html.embedded-mode .border,
+html.embedded-mode .border-bottom,
+html.embedded-mode .border-top,
+html.embedded-mode .border-start,
+html.embedded-mode .border-end {
+    border-color: var(--sai-border) !important;
+}
+html.embedded-mode hr {
+    border-color: var(--sai-border) !important;
+    opacity: 0.5 !important;
+}
+
+/* =============================== */
+/* PAGINATION                      */
+/* =============================== */
+html.embedded-mode .page-item .page-link {
+    background: transparent !important;
+    border-color: var(--sai-border) !important;
+    color: var(--sai-text-muted) !important;
+}
+html.embedded-mode .page-item .page-link:hover {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: var(--sai-green) !important;
+}
+html.embedded-mode .page-item.active .page-link {
+    background: var(--sai-green) !important;
+    border-color: var(--sai-green) !important;
+    color: #fff !important;
+    box-shadow: 0 0 10px var(--sai-green-glow) !important;
+}
+html.embedded-mode .page-item.disabled .page-link {
+    background: transparent !important;
+    color: rgba(110, 231, 183, 0.3) !important;
+}
+
+/* =============================== */
+/* PROGRESS BARS                   */
+/* =============================== */
+html.embedded-mode .progress {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-radius: 99px !important;
+    height: 10px !important;
+}
+html.embedded-mode .progress-bar {
+    background: linear-gradient(90deg, var(--sai-green), var(--sai-green-dark)) !important;
+    box-shadow: 0 0 10px var(--sai-green-glow) !important;
+}
+html.embedded-mode .progress-bar.bg-success {
+    background: linear-gradient(90deg, var(--sai-green), var(--sai-green-dark)) !important;
+}
+html.embedded-mode .progress-bar.bg-warning {
+    background: linear-gradient(90deg, var(--sai-gold), var(--sai-gold-dark)) !important;
+    box-shadow: 0 0 10px var(--sai-gold-glow) !important;
+}
+html.embedded-mode .progress-bar.bg-danger {
+    background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+}
+
+/* =============================== */
+/* ALERTS                          */
+/* =============================== */
+html.embedded-mode .alert {
+    border-radius: 10px !important;
+    border: 1px solid var(--sai-border) !important;
+}
+html.embedded-mode .alert-success {
+    background: rgba(16, 185, 129, 0.12) !important;
+    color: var(--sai-green) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+html.embedded-mode .alert-warning {
+    background: rgba(245, 158, 11, 0.12) !important;
+    color: var(--sai-gold) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+html.embedded-mode .alert-danger {
+    background: rgba(239, 68, 68, 0.12) !important;
+    color: #fca5a5 !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+html.embedded-mode .alert-info {
+    background: rgba(56, 189, 248, 0.12) !important;
+    color: var(--sai-info) !important;
+    border-color: rgba(56, 189, 248, 0.3) !important;
+}
+
+/* =============================== */
+/* TABS                            */
+/* =============================== */
+html.embedded-mode .nav-tabs {
+    border-bottom: 1px solid var(--sai-border) !important;
+}
+html.embedded-mode .nav-tabs .nav-link {
+    color: var(--sai-text-muted) !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+}
+html.embedded-mode .nav-tabs .nav-link:hover {
+    color: var(--sai-green) !important;
+    border-bottom-color: rgba(16, 185, 129, 0.4) !important;
+}
+html.embedded-mode .nav-tabs .nav-link.active {
+    background: transparent !important;
+    color: var(--sai-green) !important;
+    border-bottom: 2px solid var(--sai-green) !important;
+}
+html.embedded-mode .tab-content {
+    color: var(--sai-text) !important;
+}
+
+/* =============================== */
+/* "ON FIRE" Streak Section        */
+/* =============================== */
+html.embedded-mode .bg-gradient-dark,
+html.embedded-mode [class*="bg-gradient"] {
+    background: linear-gradient(135deg, #071910, #0d2818) !important;
+    border: 1px solid var(--sai-green) !important;
+    box-shadow: 0 0 24px var(--sai-green-glow) !important;
+    color: var(--sai-text) !important;
+}
+
+/* =============================== */
+/* LIVE STATUS BAR                 */
+/* =============================== */
+html.embedded-mode [style*="linear-gradient(135deg, #0d1b2a"] {
+    background: linear-gradient(135deg, #071910, #0d2818) !important;
+    border: 1px solid var(--sai-border) !important;
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1) !important;
+}
+
+/* =============================== */
+/* ROUNDED AVATARS / IMAGES        */
+/* =============================== */
+html.embedded-mode .rounded-circle {
+    border: 2px solid var(--sai-green) !important;
+    box-shadow: 0 0 12px var(--sai-green-glow) !important;
+}
+
+/* =============================== */
+/* SECTION HEADERS                 */
+/* =============================== */
+html.embedded-mode .border-bottom.pb-1,
+html.embedded-mode .mt-3.text-secondary.border-bottom {
+    color: var(--sai-green) !important;
+    border-color: var(--sai-border) !important;
+}
+
+/* =============================== */
+/* SCROLLBAR STYLING               */
+/* =============================== */
+html.embedded-mode ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+html.embedded-mode ::-webkit-scrollbar-track {
+    background: rgba(16, 185, 129, 0.04);
+}
+html.embedded-mode ::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.3);
+    border-radius: 99px;
+}
+html.embedded-mode ::-webkit-scrollbar-thumb:hover {
+    background: var(--sai-green);
+}

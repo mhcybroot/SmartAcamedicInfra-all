@@ -1,0 +1,8 @@
+﻿{
+    "backendUrl":  "http://76.13.221.43:8565",
+    "extensionApiKey":  "productivity-secret-key-2024",
+    "chrome":  {
+                   "extensionId":  "epgfnhacoaeobfenmjillaimjlcafbba",
+                   "updateUrl":  "https://watch.skylinkltd.ai/extensions/chrome/updates.xml"
+               }
+}

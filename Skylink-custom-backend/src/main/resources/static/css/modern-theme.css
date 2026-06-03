@@ -1,0 +1,416 @@
+/* Global Modern Theme Variables */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    --glass-bg: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --shadow-hover: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+    --font-main: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+    --border-radius-card: 16px;
+    --border-radius-btn: 50px;
+}
+
+/* Base Body Styles */
+body {
+    background: #f0f2f5;
+    background-image:
+        radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 0) 0, hsla(253, 16%, 7%, 0) 50%),
+        radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0) 0, hsla(225, 39%, 30%, 0) 50%),
+        radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 0) 0, hsla(339, 49%, 30%, 0) 50%);
+    background-attachment: fixed;
+    font-family: var(--font-main);
+    color: #2d3748;
+}
+
+/* Glassmorphism Cards */
+.card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-card);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    overflow: hidden;
+    /* For inner highlights */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.card-header {
+    background: transparent;
+    /* Remove default bg */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+    color: #4a5568;
+}
+
+/* Sidebar Modernization */
+#sidebar-wrapper {
+    background: linear-gradient(180deg, #161c2d 0%, #0b0f19 100%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+}
+
+#sidebar-wrapper .sidebar-heading {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#sidebar-wrapper .company-logo-text {
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    letter-spacing: 0.5px;
+}
+
+/* Base List Group Styling */
+#sidebar-wrapper .list-group-item {
+    background: transparent !important;
+    color: #94a3b8 !important;
+    /* Brighter, crisper gray */
+    border: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    margin: 3px 12px;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    /* Slightly softer corners */
+}
+
+/* Hover & Active States */
+#sidebar-wrapper .list-group-item:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+#sidebar-wrapper .list-group-item.active,
+#sidebar-wrapper .category-link.category-active {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0) 100%) !important;
+    color: #ffffff !important;
+    border-left: 4px solid #3b82f6;
+    padding-left: calc(1rem - 4px);
+    /* compensate for border */
+    font-weight: 600;
+}
+
+/* Hover effects for category links specifically */
+#sidebar-wrapper .category-link:hover .menu-icon {
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+/* Icons */
+#sidebar-wrapper .menu-icon {
+    width: 24px;
+    text-align: center;
+    font-size: 1.1rem;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+}
+
+#sidebar-wrapper .accordion-icon {
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    opacity: 0.6;
+}
+
+#sidebar-wrapper a[aria-expanded="true"] .accordion-icon {
+    transform: rotate(180deg);
+}
+
+/* Submenu Links */
+#sidebar-wrapper .submenu-list .nav-link {
+    color: #64748b;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+
+#sidebar-wrapper .submenu-list .nav-link:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateX(4px);
+}
+
+#sidebar-wrapper .submenu-list .nav-link.active {
+    color: #60a5fa;
+    background: transparent;
+    font-weight: 600;
+}
+
+/* Divider */
+.sidebar-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.04);
+    margin: 0.5rem 1rem;
+}
+
+/* --- MINI SIDEBAR STATE --- */
+body.sb-sidenav-toggled #sidebar-wrapper .menu-text,
+body.sb-sidenav-toggled #sidebar-wrapper .accordion-icon,
+body.sb-sidenav-toggled #sidebar-wrapper .sidebar-heading .company-logo-text,
+body.sb-sidenav-toggled #sidebar-wrapper .sidebar-footer .profile-info,
+body.sb-sidenav-toggled #sidebar-wrapper .submenu-list {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    white-space: nowrap;
+    width: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+
+/* When collapsed, center the icons horizontally and remove right-side padding */
+body.sb-sidenav-toggled #sidebar-wrapper .list-group-item {
+    justify-content: center !important;
+    padding-left: 0;
+    padding-right: 0;
+    display: flex;
+}
+
+body.sb-sidenav-toggled #sidebar-wrapper .category-link {
+    cursor: pointer;
+}
+
+body.sb-sidenav-toggled #sidebar-wrapper .menu-icon {
+    margin-right: 0 !important;
+    font-size: 1.3rem;
+    /* slightly larger when alone */
+}
+
+/* Re-position the footer icons when collapsed */
+body.sb-sidenav-toggled #sidebar-wrapper .sidebar-footer {
+    display: flex;
+    justify-content: center !important;
+    padding: 1rem 0 !important;
+}
+
+body.sb-sidenav-toggled #sidebar-wrapper .logout-btn {
+    margin: 0 auto;
+}
+
+/* Modern Buttons */
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: var(--border-radius-btn);
+    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+    transition: all 0.3s ease;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-primary:hover {
+    filter: brightness(110%);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border: none;
+    color: #1a472a;
+    /* Darker text for contrast on bright green */
+    border-radius: var(--border-radius-btn);
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.6s ease-out;
+    /* Animate cards on load */
+    animation-fill-mode: both;
+}
+
+/* Stagger animations for multiple cards */
+.row .col-md-3:nth-child(1) .card {
+    animation-delay: 0.1s;
+}
+
+.row .col-md-3:nth-child(2) .card {
+    animation-delay: 0.2s;
+}
+
+.row .col-md-3:nth-child(3) .card {
+    animation-delay: 0.3s;
+}
+
+.row .col-md-3:nth-child(4) .card {
+    animation-delay: 0.4s;
+}
+
+/* Table Improvements */
+.table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    /* Gap between rows */
+}
+
+.table thead th {
+    border: none;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: #a0aec0;
+    padding-bottom: 15px;
+}
+
+.table tbody tr {
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    /* Doesn't work directly on TR, needs TD styling */
+    transition: transform 0.2s ease;
+}
+
+.table tbody tr:hover {
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    background: #fff;
+    /* Ensure it stays white/distinct */
+    z-index: 10;
+    position: relative;
+}
+
+.table td {
+    vertical-align: middle;
+    border: none;
+    padding: 1rem;
+}
+
+/* Fix rounding for first and last cells to fake rounded rows */
+.table tbody td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.table tbody td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Dashboard Metric Cards Specifically */
+.metric-card-link .card {
+    border: none;
+    /* Already handled but ensure clean */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+}
+
+.metric-card-link h1 {
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Alert Styling */
+.alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Corporate Notification Dropdown */
+.notification-dropdown {
+    width: 380px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+.notification-item {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 12px 16px;
+    display: flex;
+    align-items: start;
+    text-decoration: none !important;
+}
+
+.notification-item:hover {
+    background-color: #f8fafc;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item.unread {
+    background-color: #eff6ff;
+    /* Blue-50 equivalent */
+}
+
+.notification-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 12px;
+    font-size: 0.9rem;
+}
+
+.notification-time {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-left: auto;
+    white-space: nowrap;
+    padding-left: 8px;
+}
+
+/* Modern Toasts */
+.toast-modern {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.toast-border-success {
+    border-left: 4px solid #10b981;
+}
+
+.toast-border-error {
+    border-left: 4px solid #ef4444;
+}
+
+.toast-border-info {
+    border-left: 4px solid #3b82f6;
+}
+
+.toast-border-warning {
+    border-left: 4px solid #f59e0b;
+}

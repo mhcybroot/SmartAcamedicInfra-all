@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Academic Member Monthly Detail - Attendance System</title>
+</head>
+
+<body>
+    <div th:replace="~{layout :: layout(~{::section}, ~{}, 'reports-monthly')}">
+        <section>
+            <div class="container-fluid px-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2>Academic Member Attendance Details</h2>
+
+                        <!-- Single Month Header -->
+                        <div th:if="${report != null}">
+                            <h4 class="text-muted">
+                                <span th:text="${report.employeeName}">John Doe</span>
+                                <small>(ID: <span th:text="${report.employeeId}">1</span>)</small>
+                            </h4>
+                            <div class="text-secondary">
+                                Department: <span th:text="${report.departmentName}">IT</span> |
+                                Period: <span th:text="${report.month + '/' + report.year}">12/2025</span>
+                            </div>
+                        </div>
+
+                        <!-- Range Header -->
+                        <div th:if="${rangeReport != null}">
+                            <h4 class="text-muted">
+                                <span th:text="${rangeReport.employeeName}">John Doe</span>
+                                <small>(ID: <span th:text="${rangeReport.employeeId}">1</span>)</small>
+                            </h4>
+                            <div class="text-secondary">
+                                Period: <span th:text="${rangeReport.startDate + ' to ' + rangeReport.endDate}"></span>
+                                <br>
+                                Summary: Present: <span th:text="${rangeReport.totalPresent}"></span>,
+                                Absent: <span th:text="${rangeReport.totalAbsent}"></span>,
+                                Paid Lv: <span th:text="${rangeReport.totalPaidLeaves}"></span>,
+                                Unpaid Lv: <span th:text="${rangeReport.totalUnpaidLeaves}"></span>,
+                                Missed Punches: <span class="text-danger fw-bold" th:text="${rangeReport.totalMissedPunches}"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div>
+                        <!-- Filter Form -->
+                        <form method="get" class="d-inline-flex align-items-center mb-2">
+
+                            <select name="period" class="form-select me-2" style="width: auto;"
+                                onchange="this.form.submit()">
+                                <option value="" th:selected="${selectedPeriod == null}">Specific Month</option>
+                                <option value="3M" th:selected="${selectedPeriod == '3M'}">Last 3 Months</option>
+                                <option value="6M" th:selected="${selectedPeriod == '6M'}">Last 6 Months</option>
+                                <option value="1Y" th:selected="${selectedPeriod == '1Y'}">Last 1 Year</option>
+                            </select>
+
+                            <div th:if="${selectedPeriod == null}" class="d-inline-flex">
+                                <select name="month" class="form-select me-2" style="width: auto;">
+                                    <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}" th:text="${m}"
+                                        th:selected="${m == selectedMonth}"></option>
+                                </select>
+                                <input type="number" name="year" class="form-control me-2" style="width: 100px;"
+                                    th:value="${selectedYear}" placeholder="Year">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Go</button>
+                            </div>
+                        </form>
+
+                        <a href="/reports/monthly" class="btn btn-outline-secondary ms-2 align-top">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </a>
+
+                        <!-- Download Link Logic -->
+                        <!-- Multi-Format Export -->
+                        <div class="dropdown d-inline-block ms-2 align-top">
+                            <button class="btn btn-dark dropdown-toggle" type="button" id="exportDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-download me-1"></i> Export
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                                <li>
+                                    <a class="dropdown-item"
+                                        th:href="@{/reports/monthly/{id}/pdf(id=${report != null ? report.employeeId : rangeReport.employeeId}, year=${selectedYear}, month=${selectedMonth}, period=${selectedPeriod})}">
+                                        <i class="fas fa-file-pdf text-danger me-2"></i> PDF
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                        th:href="@{/reports/monthly/{id}/excel(id=${report != null ? report.employeeId : rangeReport.employeeId}, year=${selectedYear}, month=${selectedMonth}, period=${selectedPeriod})}">
+                                        <i class="fas fa-file-excel text-success me-2"></i> Excel
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                        th:href="@{/reports/monthly/{id}/csv(id=${report != null ? report.employeeId : rangeReport.employeeId}, year=${selectedYear}, month=${selectedMonth}, period=${selectedPeriod})}">
+                                        <i class="fas fa-file-csv text-primary me-2"></i> CSV
+                                    </a>
+                                </li>
+                            </ul>
+                        </div><button onclick="window.print()" class="btn btn-primary ms-2 align-top">Print</button>
+                    </div>
+                </div>
+
+                <!-- Range Report Loop -->
+                <div th:if="${rangeReport != null}">
+                    <div th:each="monthReport : ${rangeReport.monthlyReports}" class="mb-5">
+                        <h5 class="border-bottom pb-2 mb-3"
+                            th:text="${T(java.time.Month).of(monthReport.month)} + ' ' + ${monthReport.year}">Month Year
+                        </h5>
+
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Day</th>
+                                                <th>In Time</th>
+                                                <th>Out Time</th>
+                                                <th>Late By</th>
+                                                <th>Early By</th>
+                                                <th>Active Work</th>
+                                                <th>Break Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="day : ${monthReport.dailyDetails}">
+                                                <td th:text="${day.date}">2025-12-01</td>
+                                                <td th:text="${day.dayOfWeek}">MONDAY</td>
+                                                <td th:text="${day.inTime}">09:00</td>
+                                                <td th:text="${day.outTime}">18:00</td>
+                                                <td>
+                                                    <span th:if="${day.lateDurationMinutes > 0}"
+                                                        th:text="${day.lateDurationMinutes + ' min'}"
+                                                        class="text-danger fw-bold"></span>
+                                                    <span th:if="${day.lateDurationMinutes == 0}">-</span>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${day.earlyLeaveDurationMinutes > 0}"
+                                                        th:text="${day.earlyLeaveDurationMinutes + ' min'}"
+                                                        class="text-info fw-bold"></span>
+                                                    <span th:if="${day.earlyLeaveDurationMinutes == 0}">-</span>
+                                                </td>
+                                                <td><span class="fw-bold text-dark"
+                                                        th:text="${day.activeWorkDuration}"></span></td>
+                                                <td><span class="text-warning"
+                                                        th:text="'☕ ' + ${day.totalBreakDuration}"></span></td>
+                                                <td>
+                                                    <span class="badge" th:classappend="${'bg-' + day.statusColor}"
+                                                        th:text="${day.status}">PRESENT</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="table-group-divider">
+                                            <tr>
+                                                <td colspan="9">
+                                                    <div class="d-flex justify-content-around fw-bold small">
+                                                        <span class="text-success">Present: <span
+                                                                th:text="${monthReport.totalPresent}">20</span></span>
+                                                        <span class="text-danger">Absent: <span
+                                                                th:text="${monthReport.totalAbsent}">2</span></span>
+                                                        <span class="text-danger">Missed Punches: <span
+                                                                th:text="${monthReport.totalMissedPunches}">0</span></span>
+                                                        <span class="text-warning">Lates: <span
+                                                                th:text="${monthReport.totalLates}">3</span></span>
+                                                        <span class="text-primary">Paid Lv: <span
+                                                                th:text="${monthReport.paidLeavesCount}">0</span></span>
+                                                        <span class="text-danger">Unpaid Lv: <span
+                                                                th:text="${monthReport.unpaidLeavesCount}">0</span></span>
+                                                        <span
+                                                            class="text-dark border-start ps-3 border-2 border-dark">Active
+                                                            Work: <span
+                                                                th:text="${monthReport.totalActiveDuration}"></span></span>
+                                                        <span class="text-warning">Break Time: <span
+                                                                th:text="${monthReport.totalBreakDuration}"></span></span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Single Report Table (Existing) -->
+                <div class="card shadow-sm" th:if="${report != null}">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Day</th>
+                                        <th>In Time</th>
+                                        <th>Out Time</th>
+                                        <th>Late By</th>
+                                        <th>Early By</th>
+                                        <th>Active Work</th>
+                                        <th>Break Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="day : ${report.dailyDetails}">
+                                        <td th:text="${day.date}">2025-12-01</td>
+                                        <td th:text="${day.dayOfWeek}">MONDAY</td>
+                                        <td th:text="${day.inTime}">09:00</td>
+                                        <td th:text="${day.outTime}">18:00</td>
+                                        <td>
+                                            <span th:if="${day.lateDurationMinutes > 0}"
+                                                th:text="${day.lateDurationMinutes + ' min'}"
+                                                class="text-danger fw-bold"></span>
+                                            <span th:if="${day.lateDurationMinutes == 0}">-</span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${day.earlyLeaveDurationMinutes > 0}"
+                                                th:text="${day.earlyLeaveDurationMinutes + ' min'}"
+                                                class="text-info fw-bold"></span>
+                                            <span th:if="${day.earlyLeaveDurationMinutes == 0}">-</span>
+                                        </td>
+                                        <td><span class="fw-bold text-dark" th:text="${day.activeWorkDuration}"></span>
+                                        </td>
+                                        <td><span class="text-warning"
+                                                th:text="'☕ ' + ${day.totalBreakDuration}"></span></td>
+                                        <td>
+                                            <span class="badge" th:classappend="${'bg-' + day.statusColor}"
+                                                th:text="${day.status}">PRESENT</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="table-group-divider">
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="d-flex justify-content-around fw-bold">
+                                                <span class="text-success">Total Present: <span
+                                                        th:text="${report.totalPresent}">20</span></span>
+                                                <span class="text-danger">Total Absent: <span
+                                                        th:text="${report.totalAbsent}">2</span></span>
+                                                <span class="text-danger">Missed Punches: <span
+                                                        th:text="${report.totalMissedPunches}">0</span></span>
+                                                <span class="text-warning">Total Lates: <span
+                                                        th:text="${report.totalLates}">3</span></span>
+                                                <span class="text-info">Total Early Leaves: <span
+                                                        th:text="${report.totalEarlyLeaves}">1</span></span>
+                                                <span class="text-dark border-start ps-3 border-2 border-dark">Active
+                                                    Work: <span th:text="${report.totalActiveDuration}"></span></span>
+                                                <span class="text-warning">Break Time: <span
+                                                        th:text="${report.totalBreakDuration}"></span></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning" th:if="${report == null and rangeReport == null}">
+                    Academic Member not found.
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>

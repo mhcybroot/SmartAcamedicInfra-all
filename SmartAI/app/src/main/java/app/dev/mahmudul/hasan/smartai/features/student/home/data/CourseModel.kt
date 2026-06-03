@@ -1,0 +1,3 @@
+package app.dev.smartacademicinfrastructure
+
+data class CourseModel(val courseName: String="", val courseCode: String ="",  val courseTeacherName: String="", val courseDepartment: String="", val courseSemester: String="", val courseShift: String="", val courseGroup: String="", val courseSession: String="", val courseTeacherID: String="", val courseTeacherEmail: String="",val courseCT:String="",val courseJob:String="",val courseMid:String="",val courseQuiz:String="",val courseSessional:String="",)

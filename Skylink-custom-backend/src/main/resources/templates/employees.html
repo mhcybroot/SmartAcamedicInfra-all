@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Academic Member Management</title>
+</head>
+
+<body>
+    <div th:replace="~{layout :: layout(~{::section}, ~{::script}, 'employees')}">
+        <section>
+            <div class="container-fluid">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h2>Academic Members</h2>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false" id="bulkActionsBtn" disabled>
+                                Bulk Actions
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="openBulkAssignModal()">Assign
+                                        Department</a></li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+                            + Add Academic Member
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <form class="mb-3" th:action="@{/employees}" method="get">
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-dark text-white border-dark"><i
+                                class="fas fa-search"></i></span>
+                        <input type="text" class="form-control form-control-lg" name="keyword" id="employeeSearchInput"
+                            placeholder="Search by name, email, role, department, designation, ID..."
+                            th:value="${keyword}" autocomplete="off">
+                        <button class="btn btn-dark px-4" type="submit">Search</button>
+                        <a th:if="${keyword != null and !#strings.isEmpty(keyword)}" th:href="@{/employees}"
+                            class="btn btn-outline-secondary" title="Clear search"><i class="fas fa-times"></i></a>
+                    </div>
+                    <small th:if="${keyword != null and !#strings.isEmpty(keyword)}" class="text-muted mt-1 d-block">
+                        Showing results for <strong th:text="'\'' + ${keyword} + '\''"></strong>
+                        &mdash; <span th:text="${page.totalElements}">0</span> academic member(s) found
+                    </small>
+                </form>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"></th>
+                                        <th>Photo</th>
+                                        <th>
+                                            <a class="text-white text-decoration-none"
+                                                th:href="@{/employees(sortField='id', sortDir=${sortField == 'id' ? reverseSortDir : sortDir}, keyword=${keyword})}">
+                                                ID (Device ID)
+                                                <span th:if="${sortField == 'id'}"
+                                                    th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="text-white text-decoration-none"
+                                                th:href="@{/employees(sortField='name', sortDir=${sortField == 'name' ? reverseSortDir : sortDir}, keyword=${keyword})}">
+                                                Name
+                                                <span th:if="${sortField == 'name'}"
+                                                    th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="text-white text-decoration-none"
+                                                th:href="@{/employees(sortField='department', sortDir=${sortField == 'department' ? reverseSortDir : sortDir}, keyword=${keyword})}">
+                                                Department
+                                                <span th:if="${sortField == 'department'}"
+                                                    th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="text-white text-decoration-none"
+                                                th:href="@{/employees(sortField='role', sortDir=${sortField == 'role' ? reverseSortDir : sortDir}, keyword=${keyword})}">
+                                                Role
+                                                <span th:if="${sortField == 'role'}"
+                                                    th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="text-white text-decoration-none"
+                                                th:href="@{/employees(sortField='email', sortDir=${sortField == 'email' ? reverseSortDir : sortDir}, keyword=${keyword})}">
+                                                Email
+                                                <span th:if="${sortField == 'email'}"
+                                                    th:text="${sortDir == 'asc' ? '▲' : '▼'}"></span>
+                                            </a>
+                                        </th>
+                                        <th>Quota</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="emp : ${employees}">
+                                        <td><input type="checkbox" class="emp-checkbox" th:value="${emp.id}"
+                                                onclick="updateBulkBtn()"></td>
+                                        <td>
+                                            <img th:if="${emp.photoBase64 != null}"
+                                                th:src="'data:image/jpeg;base64,' + ${emp.photoBase64}" width="50"
+                                                height="50" class="rounded-circle" style="object-fit:cover;">
+                                            <span th:if="${emp.photoBase64 == null}" class="text-muted">No IMG</span>
+                                        </td>
+                                        <td th:text="${emp.id}">1</td>
+                                        <td>
+                                            <span th:text="${emp.name}">John Doe</span>
+                                            <span th:if="${emp.isGuest}"
+                                                class="badge bg-info text-dark ms-1">Guest</span>
+                                        </td>
+                                        <td th:text="${emp.department != null ? emp.department.name : 'Unassigned'}">
+                                            Engineering
+                                        </td>
+                                        <td>
+                                            <div th:text="${emp.role}">Developer</div>
+                                            <small class="text-muted" th:if="${emp.designation != null}"
+                                                th:text="${emp.designation}">Senior</small>
+                                            <div style="font-size: 0.75rem" class="text-info"
+                                                th:if="${emp.reportsTo != null}">
+                                                <i class="fas fa-level-up-alt"></i> <span
+                                                    th:text="${emp.reportsTo.name}">Manager</span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${emp.email}">john@example.com</td>
+                                        <td>
+                                            <span th:if="${emp.annualLeaveQuota != null}"
+                                                th:text="${emp.annualLeaveQuota}">20</span>
+                                            <span th:if="${emp.annualLeaveQuota == null}"
+                                                class="badge bg-secondary">Default</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-warning btn-sm me-1" type="button"
+                                                th:data-id="${emp.id}" th:data-name="${emp.name}"
+                                                th:data-role="${emp.role}" th:data-email="${emp.email}"
+                                                th:data-dept-id="${emp.department != null ? emp.department.id : ''}"
+                                                th:data-quota="${emp.annualLeaveQuota}"
+                                                th:data-salary="${emp.monthlySalary}" th:data-is-guest="${emp.isGuest}"
+                                                th:data-allowance="${emp.fixedAllowance}"
+                                                th:data-bank-name="${emp.bankName}"
+                                                th:data-account-number="${emp.accountNumber}"
+                                                th:data-username="${emp.username}"
+                                                th:data-designation="${emp.designation}"
+                                                th:data-reports-to-id="${emp.reportsTo != null ? emp.reportsTo.id : ''}"
+                                                th:data-reports-to-assistant-id="${emp.reportsToAssistant != null ? emp.reportsToAssistant.id : ''}"
+                                                th:data-joining-date="${emp.joiningDate}" onclick="editEmployee(this)">
+                                                Edit
+                                            </button>
+                                            <a th:href="@{/employees/{id}/resources(id=${emp.id})}"
+                                                class="btn btn-info btn-sm text-white shadow-sm fw-bold">
+                                                <i class="fas fa-lock me-1"></i>Resources
+                                            </a>
+                                            <a th:href="@{/employees/delete/{id}(id=${emp.id})}"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Delete this academic member?')">Delete</a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(employees)}">
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            <i class="fas fa-search me-2 opacity-50"></i>
+                                            <span th:if="${keyword != null and !#strings.isEmpty(keyword)}">No academic members
+                                                found matching <strong
+                                                    th:text="'\'' + ${keyword} + '\''"></strong>.</span>
+                                            <span th:unless="${keyword != null and !#strings.isEmpty(keyword)}">No
+                                                academic members found. Add one to link names to attendance logs.</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div th:replace="~{fragments/pagination :: pagination(page=${page}, baseUrl='/employees')}"></div>
+                </div>
+
+                <!-- Add/Edit Employee Modal -->
+                <div class="modal fade" id="addEmployeeModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="/employees" method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="empModalTitle">Add Academic Member</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Device User ID (PIN)</label>
+                                        <input type="text" class="form-control" id="empId" name="id" required
+                                            placeholder="Important! Must match Device ID">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="empName" name="name"
+                                            placeholder="John Doe" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Department</label>
+                                        <select name="departmentId" id="empDept" class="form-select">
+                                            <option value="">Select Department</option>
+                                            <option th:each="dept : ${departments}" th:value="${dept.id}"
+                                                th:text="${dept.name}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Role</label>
+                                        <input type="text" class="form-control" id="empRole" name="role"
+                                            placeholder="Staff">
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="empIsGuest" name="guest">
+                                        <label class="form-check-label" for="empIsGuest">Is Guest</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="empEmail" name="email"
+                                            placeholder="john@example.com">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" id="empUsername" name="username"
+                                            placeholder="Set password for academic member login">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Key Role / Designation</label>
+                                        <input type="text" class="form-control" id="empDesignation" name="designation"
+                                            placeholder="e.g. Senior Manager">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Reports To (Supervisor)</label>
+                                        <select name="reportsToId" id="empReportsTo" class="form-select">
+                                            <option value="">No Supervisor (Top Level)</option>
+                                            <option th:each="sup : ${allEmployees}" th:value="${sup.id}"
+                                                th:text="${sup.name + ' (' + (sup.designation != null ? sup.designation : sup.role) + ')'}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Assistant / Backup Supervisor</label>
+                                        <select name="reportsToAssistantId" id="empReportsToAssistant"
+                                            class="form-select">
+                                            <option value="">No Backup Supervisor</option>
+                                            <option th:each="sup : ${allEmployees}" th:value="${sup.id}"
+                                                th:text="${sup.name + ' (' + (sup.designation != null ? sup.designation : sup.role) + ')'}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Annual Leave Quota (Days)</label>
+                                        <input type="number" class="form-control" id="empQuota" name="annualLeaveQuota"
+                                            placeholder="Leave empty to use Global Default">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Monthly Salary</label>
+                                        <input type="number" step="0.01" class="form-control" name="monthlySalary"
+                                            id="monthlySalary" placeholder="Enter basic monthly salary">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Fixed Allowance (Recurring)</label>
+                                        <input type="number" step="0.01" class="form-control" name="fixedAllowance"
+                                            id="fixedAllowance" placeholder="e.g. Housing/Transport">
+                                    </div>
+                                    <h6 class="mt-3 text-secondary border-bottom pb-1">Bank Information</h6>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Bank Name</label>
+                                            <input type="text" class="form-control" name="bankName" id="bankName"
+                                                placeholder="Bank Name">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Account Number</label>
+                                            <input type="text" class="form-control" name="accountNumber"
+                                                id="accountNumber" placeholder="Account No.">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Joining Date</label>
+                                        <input type="date" class="form-control" id="empJoiningDate" name="joiningDate">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save Academic Member</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bulk Assign Dept Modal -->
+            <div class="modal fade" id="bulkAssignModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form action="/employees/bulk/assign-department" method="post" id="bulkAssignForm">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Bulk Assign Department</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Assign selected academic members to department:</p>
+                                <div class="mb-3">
+                                    <select name="departmentId" class="form-select" required>
+                                        <option value="">Select Department</option>
+                                        <option th:each="dept : ${departments}" th:value="${dept.id}"
+                                            th:text="${dept.name}"></option>
+                                    </select>
+                                </div>
+                                <div id="selectedEmployeeInputs"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Assign</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function editEmployee(btn) {
+                var id = btn.getAttribute('data-id');
+                var name = btn.getAttribute('data-name');
+                var role = btn.getAttribute('data-role');
+                var email = btn.getAttribute('data-email');
+                var deptId = btn.getAttribute('data-dept-id');
+                var quota = btn.getAttribute('data-quota');
+                var salary = btn.getAttribute('data-salary');
+                var allowance = btn.getAttribute('data-allowance');
+                var bankName = btn.getAttribute('data-bank-name');
+                var accNum = btn.getAttribute('data-account-number');
+                var username = btn.getAttribute('data-username'); // If available
+                var isGuest = btn.getAttribute('data-is-guest') === 'true';
+                var joiningDate = btn.getAttribute('data-joining-date');
+                var designation = btn.getAttribute('data-designation');
+                var reportsToId = btn.getAttribute('data-reports-to-id');
+                var reportsToAssistantId = btn.getAttribute('data-reports-to-assistant-id');
+
+                document.getElementById('empId').value = id;
+                document.getElementById('empId').readOnly = true; // Cannot change ID
+                document.getElementById('empName').value = name;
+                document.getElementById('empRole').value = role;
+                document.getElementById('empEmail').value = email;
+                document.getElementById('empDept').value = deptId;
+                document.getElementById('empQuota').value = quota;
+                document.getElementById('monthlySalary').value = salary;
+                document.getElementById('fixedAllowance').value = allowance;
+                document.getElementById('bankName').value = bankName;
+                document.getElementById('accountNumber').value = accNum;
+                document.getElementById('empIsGuest').checked = isGuest;
+                document.getElementById('empJoiningDate').value = joiningDate;
+                document.getElementById('empDesignation').value = designation;
+                document.getElementById('empReportsTo').value = reportsToId;
+                document.getElementById('empReportsToAssistant').value = reportsToAssistantId;
+                document.getElementById('empModalTitle').innerText = 'Edit Academic Member';
+                new bootstrap.Modal(document.getElementById('addEmployeeModal')).show();
+            }
+
+            // Reset check (optional, or just rely on manual clear)
+            document.getElementById('addEmployeeModal').addEventListener('hidden.bs.modal', function () {
+                document.getElementById('empModalTitle').innerText = 'Add Academic Member';
+                document.getElementById('empId').readOnly = false;
+                document.getElementById('empId').value = '';
+                document.getElementById('empName').value = '';
+                document.getElementById('empRole').value = '';
+                document.getElementById('empEmail').value = '';
+                document.getElementById('empDept').value = '';
+                document.getElementById('empIsGuest').checked = false;
+                document.getElementById('empQuota').value = '';
+                document.getElementById('monthlySalary').value = '';
+                document.getElementById('fixedAllowance').value = '';
+                document.getElementById('bankName').value = '';
+                document.getElementById('accountNumber').value = '';
+                document.getElementById('empJoiningDate').value = '';
+                document.getElementById('empUsername').value = ''; // Clear username
+            });
+            document.getElementById('empModalTitle').innerText = 'Add Academic Member';
+            document.getElementById('empId').readOnly = false;
+            document.getElementById('empId').value = '';
+            document.getElementById('empName').value = '';
+            document.getElementById('empRole').value = '';
+            document.getElementById('empEmail').value = '';
+            document.getElementById('empRole').value = '';
+            document.getElementById('empEmail').value = '';
+            document.getElementById('empDept').value = '';
+            document.getElementById('empQuota').value = '';
+            document.getElementById('monthlySalary').value = '';
+
+            // Bulk Actions Logic
+            function toggleAll(source) {
+                var checkboxes = document.getElementsByClassName('emp-checkbox');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    checkboxes[i].checked = source.checked;
+                }
+                updateBulkBtn();
+            }
+
+            function updateBulkBtn() {
+                var checkboxes = document.getElementsByClassName('emp-checkbox');
+                var checkedCount = 0;
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked) checkedCount++;
+                }
+                var btn = document.getElementById('bulkActionsBtn');
+                if (btn) btn.disabled = checkedCount === 0;
+            }
+
+            function openBulkAssignModal() {
+                var checkboxes = document.getElementsByClassName('emp-checkbox');
+                var container = document.getElementById('selectedEmployeeInputs');
+                container.innerHTML = '';
+                var count = 0;
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked) {
+                        var input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'employeeIds';
+                        input.value = checkboxes[i].value;
+                        container.appendChild(input);
+                        count++;
+                    }
+                }
+                if (count > 0) {
+                    new bootstrap.Modal(document.getElementById('bulkAssignModal')).show();
+                }
+            }
+
+        </script>
+    </div>
+</body>
+
+</html>

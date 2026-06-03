@@ -1,0 +1,38 @@
+# Logs
+logs/
+*.log
+
+# IDEs and OS Files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.suo
+*.ntvs*
+
+# Node / Vue Portal
+node_modules/
+dist/
+.eslintcache
+
+# Gradle / Java Backends
+.gradle/
+build/
+bin/
+out/
+*.class
+*.jar
+*.war
+.classpath
+.project
+.settings/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/

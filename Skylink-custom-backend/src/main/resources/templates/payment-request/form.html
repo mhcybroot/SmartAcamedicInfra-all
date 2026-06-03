@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>New Payment Request</title>
+</head>
+
+<body>
+    <div th:replace="~{layout :: layout(~{::section}, ~{::script}, 'payment-requests')}">
+        <section>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center mb-4 fade-in-up">
+                        <a th:href="@{/payment-requests}"
+                            class="btn btn-outline-secondary rounded-circle me-3 shadow-sm"
+                            style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                        <div>
+                            <h2 class="mb-0 fw-bold">New Request</h2>
+                            <p class="text-muted mb-0">Submit a new payment request for approval</p>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-lg fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="card-body p-4 p-md-5">
+                            <form th:action="@{/payment-requests}" th:object="${paymentRequest}" method="post">
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Company
+                                            (LLC)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="fas fa-building text-secondary"></i></span>
+                                            <select class="form-select bg-light border-0" th:field="*{company}"
+                                                required>
+                                                <option value="">-- Select Company --</option>
+                                                <option th:each="c : ${activeCompanies}" th:value="${c.id}"
+                                                    th:text="${c.name}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Work Order
+                                            Number</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="fas fa-hashtag text-secondary"></i></span>
+                                            <input type="text" class="form-control bg-light border-0"
+                                                th:field="*{workOrderNumber}" placeholder="e.g. WO-2023-001" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 position-relative">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Contractor
+                                            Name</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="fas fa-hard-hat text-secondary"></i></span>
+                                            <!-- Search Input -->
+                                            <input type="text" id="contractorSearch"
+                                                class="form-control bg-light border-0"
+                                                placeholder="Type to search contractor..." autocomplete="off">
+
+                                            <!-- Hidden Original Select for Form Binding -->
+                                            <!-- We keep id="contractor" here so the auto-fill script continues to work -->
+                                            <select class="d-none" th:field="*{contractor}" id="contractor" required>
+                                                <option value="">-- Select Contractor --</option>
+                                                <option th:each="c : ${activeContractors}" th:value="${c.id}"
+                                                    th:text="${c.name}"></option>
+                                            </select>
+                                        </div>
+                                        <!-- Dropdown Results Container -->
+                                        <div id="contractorList"
+                                            class="list-group position-absolute shadow-lg d-none start-0 end-0"
+                                            style="z-index: 1000; max-height: 250px; overflow-y: auto; top: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Amount
+                                            ($)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0 fw-bold">$</span>
+                                            <input type="number" step="0.01" class="form-control bg-light border-0"
+                                                th:field="*{amount}" placeholder="0.00" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Payment
+                                            Priority</label>
+                                        <select class="form-select bg-light border-0" th:field="*{priority}">
+                                            <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}"></option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Payment
+                                            Method</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="fas fa-credit-card text-secondary"></i></span>
+                                            <select class="form-select bg-light border-0" th:field="*{paymentMethod}">
+                                                <option value="">-- Select Method --</option>
+                                                <option th:each="pm : ${activePaymentMethods}" th:value="${pm.id}"
+                                                    th:text="${pm.methodName}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Account
+                                            Details / ID / Link</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="fas fa-info-circle text-secondary"></i></span>
+                                            <input type="text" class="form-control bg-light border-0"
+                                                th:field="*{paymentAccountDetails}"
+                                                placeholder="e.g. Zelle Email, Bank Acct #">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 position-relative">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Client
+                                            Code</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0"><i
+                                                    class="fas fa-code text-secondary"></i></span>
+                                            <input type="text" id="clientSearch" class="form-control bg-light border-0"
+                                                placeholder="Type to search client..." autocomplete="off">
+                                            <select class="d-none" th:field="*{client}" id="client">
+                                                <option value="">-- Select Client --</option>
+                                                <option th:each="cl : ${activeClients}" th:value="${cl.id}"
+                                                    th:text="${cl.name + ' (' + cl.code + ')'}"></option>
+                                            </select>
+                                        </div>
+                                        <div id="clientList"
+                                            class="list-group position-absolute shadow-lg d-none start-0 end-0"
+                                            style="z-index: 1000; max-height: 250px; overflow-y: auto; top: 100%;">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold text-secondary text-uppercase small">Reason /
+                                            Description</label>
+                                        <textarea class="form-control bg-light border-0" th:field="*{reason}" rows="3"
+                                            placeholder="Provide details about this payment request..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-5">
+                                    <a th:href="@{/payment-requests}"
+                                        class="btn btn-outline-secondary rounded-pill px-4 me-3">Cancel</a>
+                                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-lg">
+                                        <i class="fas fa-paper-plane me-2"></i> Submit Request
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script>
+            // --- Reusable Searchable Dropdown ---
+            function setupSearchableDropdown(selectId, searchId, listId) {
+                const select = document.getElementById(selectId);
+                const search = document.getElementById(searchId);
+                const list = document.getElementById(listId);
+
+                if (!select || !search || !list) return;
+
+                const options = Array.from(select.options)
+                    .slice(1) // Skip placeholder
+                    .map(opt => ({ val: opt.value, text: opt.text }));
+
+                search.addEventListener('input', function () {
+                    const filter = this.value.toLowerCase();
+                    renderList(options.filter(opt => opt.text.toLowerCase().includes(filter)));
+                });
+
+                search.addEventListener('click', function () {
+                    if (this.value.trim() === '') renderList(options);
+                });
+
+                function renderList(items) {
+                    list.innerHTML = '';
+                    if (items.length > 0) {
+                        items.forEach(opt => {
+                            const item = document.createElement('a');
+                            item.className = 'list-group-item list-group-item-action';
+                            item.style.cursor = 'pointer';
+                            item.textContent = opt.text;
+                            item.onclick = (e) => {
+                                e.preventDefault();
+                                select.value = opt.val;
+                                search.value = opt.text;
+                                list.classList.add('d-none');
+                                select.dispatchEvent(new Event('change')); // Trigger listeners
+                            };
+                            list.appendChild(item);
+                        });
+                        list.classList.remove('d-none');
+                    } else {
+                        list.classList.add('d-none');
+                    }
+                }
+
+                document.addEventListener('click', function (e) {
+                    if (!search.contains(e.target) && !list.contains(e.target)) {
+                        list.classList.add('d-none');
+                    }
+                });
+
+                // Init
+                if (select.value) {
+                    const selectedOpt = select.options[select.selectedIndex];
+                    if (selectedOpt) search.value = selectedOpt.text;
+                }
+            }
+
+            // Apply to fields
+            setupSearchableDropdown('contractor', 'contractorSearch', 'contractorList');
+            setupSearchableDropdown('client', 'clientSearch', 'clientList');
+
+            let contractorPaymentInfos = {}; // Map: methodId -> accountDetails
+
+            // Auto-populate Payment Details on Contractor Change
+            document.getElementById('contractor').addEventListener('change', function () {
+                const contractorId = this.value;
+                if (!contractorId) {
+                    contractorPaymentInfos = {};
+                    return;
+                }
+
+                // 1. Fetch All Payment Infos for Lookup Map
+                fetch(`/master-data/api/contractors/${contractorId}/payment-infos`)
+                    .then(res => res.json())
+                    .then(data => {
+                        contractorPaymentInfos = {};
+                        data.forEach(info => {
+                            if (info.paymentMethod && info.paymentMethod.id) {
+                                contractorPaymentInfos[info.paymentMethod.id] = info.accountDetails;
+                            }
+                        });
+                    })
+                    .catch(err => console.error('Error fetching payment infos:', err));
+
+                // 2. Fetch Default Info for Initial Set
+                fetch(`/master-data/api/contractors/${contractorId}/default-payment-info`)
+                    .then(response => {
+                        if (response.ok) return response.json();
+                        throw new Error('Network response was not ok.');
+                    })
+                    .then(data => {
+                        if (data.paymentMethodId) {
+                            document.getElementById('paymentMethod').value = data.paymentMethodId;
+                        }
+                        if (data.accountDetails) {
+                            document.getElementById('paymentAccountDetails').value = data.accountDetails;
+                        }
+                    })
+                    .catch(error => console.error('Error fetching default details:', error));
+            });
+
+            // Update Details when Method Changes
+            document.getElementById('paymentMethod').addEventListener('change', function () {
+                const methodId = parseInt(this.value); // Ensure ID type matches
+                const detailsInput = document.getElementById('paymentAccountDetails');
+
+                // If we have saved info for this method, use it
+                if (contractorPaymentInfos[methodId]) {
+                    detailsInput.value = contractorPaymentInfos[methodId];
+                } else {
+                    // Safety check
+                    if (Object.keys(contractorPaymentInfos).length > 0) {
+                        detailsInput.value = "";
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>

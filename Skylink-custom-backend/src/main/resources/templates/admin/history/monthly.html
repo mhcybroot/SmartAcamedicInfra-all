@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Monthly History</title>
+</head>
+
+<body>
+    <div th:replace="~{layout :: layout(~{::section}, ~{::script}, 'history-monthly')}">
+        <section>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h2 class="fw-bold text-gradient-primary">Monthly History</h2>
+                    <p class="text-muted">View payment requests for a specific month.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <form th:action="@{/admin/history/monthly}" method="get"
+                        class="d-flex justify-content-md-end align-items-center gap-2">
+                        <select name="month" class="form-select w-auto shadow-sm">
+                            <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}"
+                                th:selected="${i == selectedMonth}"></option>
+                        </select>
+                        <select name="year" class="form-select w-auto shadow-sm">
+                            <option th:each="y : ${#numbers.sequence(2023, 2030)}" th:value="${y}" th:text="${y}"
+                                th:selected="${y == selectedYear}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-primary rounded-pill shadow-sm">Go</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card border-0 shadow-sm bg-success text-white h-100">
+                        <div class="card-body">
+                            <h6 class="text-uppercase small opacity-75">Month</h6>
+                            <h3 class="display-6 fw-bold mb-0">
+                                <span th:text="${monthName}"></span> <span th:text="${selectedYear}"
+                                    class="fs-4"></span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <h6 class="text-uppercase small text-muted fw-bold">Total Requests</h6>
+                            <h3 class="text-dark fw-bold mb-0">
+                                <i class="fas fa-file-invoice text-primary me-2"></i>
+                                <span th:text="${totalCount}">0</span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <h6 class="text-uppercase small text-muted fw-bold">Total Amount</h6>
+                            <h3 class="text-success fw-bold mb-0">
+                                <i class="fas fa-dollar-sign me-1"></i>
+                                <span th:text="${totalAmount}">0.00</span>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light py-2" role="button" data-bs-toggle="collapse"
+                    data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-secondary fw-bold"><i class="fas fa-filter me-2"></i>Advanced Filters</h6>
+                        <i class="fas fa-chevron-down small text-muted"></i>
+                    </div>
+                </div>
+                <div class="collapse show" id="filterCollapse">
+                    <div class="card-body">
+                        <form th:action="@{/admin/history/monthly}" method="get" id="filterForm">
+                            <input type="hidden" name="year" th:value="${selectedYear}">
+                            <input type="hidden" name="month" th:value="${selectedMonth}">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Contractor</label>
+                                    <select name="contractorId" class="form-select form-select-sm">
+                                        <option value="">All Contractors</option>
+                                        <option th:each="c : ${activeContractors}" th:value="${c.id}"
+                                            th:text="${c.name}" th:selected="${c.id == contractorId}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Client</label>
+                                    <select name="clientId" class="form-select form-select-sm">
+                                        <option value="">All Clients</option>
+                                        <option th:each="c : ${activeClients}" th:value="${c.id}"
+                                            th:text="${c.code + ' - ' + c.name}" th:selected="${c.id == clientId}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Payment Method</label>
+                                    <select name="paymentMethodId" class="form-select form-select-sm">
+                                        <option value="">All Methods</option>
+                                        <option th:each="p : ${activePaymentMethods}" th:value="${p.id}"
+                                            th:text="${p.methodName}" th:selected="${p.id == paymentMethodId}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Work Order</label>
+                                    <input type="text" name="workOrderNumber" class="form-control form-control-sm"
+                                        placeholder="Search WO#" th:value="${workOrderNumber}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Requester</label>
+                                    <input type="text" name="requesterName" class="form-control form-control-sm"
+                                        placeholder="Name or Username" th:value="${requesterName}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Priority</label>
+                                    <select name="priority" class="form-select form-select-sm">
+                                        <option value="">All Priorities</option>
+                                        <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}"
+                                            th:selected="${p == priority}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Approval Status</label>
+                                    <select name="status" class="form-select form-select-sm">
+                                        <option value="">All Statuses</option>
+                                        <option th:each="s : ${requestStatuses}" th:value="${s}" th:text="${s}"
+                                            th:selected="${s == status}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">Payment Status</label>
+                                    <select name="paymentStatus" class="form-select form-select-sm">
+                                        <option value="">All Payment Statuses</option>
+                                        <option th:each="ps : ${paymentStatuses}" th:value="${ps}" th:text="${ps}"
+                                            th:selected="${ps == paymentStatus}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-muted">PPW Status</label>
+                                    <select name="ppwUpdateStatus" class="form-select form-select-sm">
+                                        <option value="">All PPW Statuses</option>
+                                        <option th:each="ppw : ${ppwStatuses}" th:value="${ppw}" th:text="${ppw}"
+                                            th:selected="${ppw == ppwUpdateStatus}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12 d-flex justify-content-end gap-2 mt-3">
+                                    <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="modal"
+                                        data-bs-target="#exportModal">
+                                        <i class="fas fa-cog me-1"></i> Export Options
+                                    </button>
+                                    <div class="vr mx-2"></div>
+                                    <a th:href="@{/admin/history/monthly(year=${selectedYear}, month=${selectedMonth})}"
+                                        class="btn btn-sm btn-outline-secondary">Clear Filters</a>
+                                    <button type="submit" class="btn btn-sm btn-primary px-4">Apply Filters</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Modal -->
+            <div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold">Export Options</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h6 class="mb-3 text-muted">Select Columns to Include:</h6>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="date"
+                                            id="col_date" checked form="filterForm">
+                                        <label class="form-check-label" for="col_date">Date of Request</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="requester"
+                                            id="col_req" checked form="filterForm">
+                                        <label class="form-check-label" for="col_req">Requested By</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="workOrder"
+                                            id="col_wo" checked form="filterForm">
+                                        <label class="form-check-label" for="col_wo">Work Order</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="amount"
+                                            id="col_amt" checked form="filterForm">
+                                        <label class="form-check-label" for="col_amt">Amount</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns"
+                                            value="contractor" id="col_cont" checked form="filterForm">
+                                        <label class="form-check-label" for="col_cont">Contractor</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="method"
+                                            id="col_meth" checked form="filterForm">
+                                        <label class="form-check-label" for="col_meth">Method ID</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="client"
+                                            id="col_cli" checked form="filterForm">
+                                        <label class="form-check-label" for="col_cli">Client Code</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="priority"
+                                            id="col_prio" checked form="filterForm">
+                                        <label class="form-check-label" for="col_prio">Priority</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="approval"
+                                            id="col_auth" checked form="filterForm">
+                                        <label class="form-check-label" for="col_auth">Approval Auth</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="reason"
+                                            id="col_reas" checked form="filterForm">
+                                        <label class="form-check-label" for="col_reas">Reason</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="status"
+                                            id="col_stat" checked form="filterForm">
+                                        <label class="form-check-label" for="col_stat">Status</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="columns" value="ppw"
+                                            id="col_ppw" checked form="filterForm">
+                                        <label class="form-check-label" for="col_ppw">PPW Update</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" form="filterForm" formaction="/admin/history/export" name="format"
+                                value="pdf" class="btn btn-danger">
+                                <i class="fas fa-file-pdf me-1"></i> Export PDF
+                            </button>
+                            <button type="submit" form="filterForm" formaction="/admin/history/export" name="format"
+                                value="csv" class="btn btn-success">
+                                <i class="fas fa-file-csv me-1"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-uppercase text-secondary small">
+                                <tr>
+                                    <th class="ps-4">ID</th>
+                                    <th>Date</th>
+                                    <th>Work Order</th>
+                                    <th>Amount</th>
+                                    <th>Requester</th>
+                                    <th>Contractor</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="req : ${requests}">
+                                    <td class="ps-4 fw-bold" th:text="${'#' + req.id}"></td>
+                                    <td th:text="${req.requestDate}"></td>
+                                    <td th:text="${req.workOrderNumber}"></td>
+                                    <td class="fw-bold text-success" th:text="${'$' + req.amount}"></td>
+                                    <td
+                                        th:text="${req.requester != null ? req.requester.username : (req.employeeRequester != null ? req.employeeRequester.name : 'Unknown')}">
+                                    </td>
+                                    <td th:text="${req.contractorName}"></td>
+                                    <td>
+                                        <span th:text="${req.status}"
+                                            th:class="${'badge rounded-pill ' + 
+                                            (req.status.name() == 'APPROVED' ? 'bg-success' : 
+                                            (req.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-warning text-dark'))}">
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/payment-requests/{id}(id=${req.id})}"
+                                            class="btn btn-sm btn-outline-primary rounded-pill">View</a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(requests)}">
+                                    <td colspan="8" class="text-center py-4 text-muted">No requests found for this
+                                        month.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script></script>
+    </div>
+</body>
+
+</html>

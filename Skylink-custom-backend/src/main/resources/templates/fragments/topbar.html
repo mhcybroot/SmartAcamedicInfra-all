@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body th:fragment="topbar">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-4">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+            <button class="btn btn-outline-dark" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Command Palette Trigger -->
+            <button class="btn btn-light rounded-pill px-3 ms-3 me-auto text-secondary border shadow-sm"
+                id="cmdPaletteTrigger" style="min-width: 200px; text-align: left;">
+                <i class="fas fa-search me-2"></i> <span class="small">Search... (Ctrl+K)</span>
+            </button>
+
+            <!-- Notifications (Simplified) -->
+            <div class="nav-item me-3">
+                <a class="nav-link text-dark position-relative" th:href="@{/notifications/history}"
+                    title="View Notifications">
+                    <i class="fas fa-bell fa-lg"></i>
+                    <!-- No Badge, No Dropdown -->
+                </a>
+            </div>
+
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle text-secondary fw-bold" href="#" role="button" id="userDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user-circle me-1"></i>
+                    <span sec:authentication="name">User</span>
+                    <span class="badge bg-secondary ms-1" sec:authentication="principal.authorities">[Role]</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</body>
+
+</html>

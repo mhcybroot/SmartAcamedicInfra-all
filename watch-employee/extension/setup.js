@@ -1,0 +1,75 @@
+document.getElementById('submitBtn').addEventListener('click', async () => {
+    const code = document.getElementById('enrollmentCode').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const statusDiv = document.getElementById('status');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (!code || !email) {
+        statusDiv.className = 'error';
+        statusDiv.textContent = 'Please enter both email and enrollment code.';
+        return;
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        statusDiv.className = 'error';
+        statusDiv.textContent = 'Please enter a valid email address.';
+        return;
+    }
+
+    submitBtn.disabled = true;
+    statusDiv.textContent = 'Verifying server connection...';
+
+    // Verify connection first
+    try {
+        // Use blocked-sites as a lightweight health check (returns empty list if valid)
+        // Adjust logic if you have a dedicated health endpoint
+        // Assuming SERVER_URL is defined elsewhere or needs to be defined.
+        // For this example, let's assume it's a global constant.
+        // SERVER_URL is defined in config.js
+        const response = await fetch(`${SERVER_URL}/api/blocked-sites?deviceId=setup_check`);
+        if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+        }
+    } catch (error) {
+        statusDiv.className = 'error';
+        statusDiv.textContent = `Cannot connect to server at ${SERVER_URL}. Error: ${error.message}. Please check if the server is running and the URL is correct.`;
+        submitBtn.disabled = false;
+        console.error('Server connection error:', error);
+        return;
+    }
+
+    statusDiv.textContent = 'Linking account...';
+
+    try {
+        // Save to browser storage
+        await browser.storage.local.set({
+            deviceId: code,
+            userEmail: email
+        });
+
+        statusDiv.className = 'success';
+        statusDiv.textContent = 'Success! Linking browser...';
+
+        // Brief delay for visual feedback, then close
+        setTimeout(() => {
+            window.close();
+            // Fallback for some browsers where window.close() might fail from script
+            alert('Setup complete! You can close this tab now.');
+        }, 1000);
+
+    } catch (error) {
+        console.error('Setup error:', error);
+        statusDiv.className = 'error';
+        statusDiv.textContent = 'An error occurred. Please try again.';
+        submitBtn.disabled = false;
+    }
+});
+
+// Enable 'Enter' key to submit
+document.getElementById('enrollmentCode').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        document.getElementById('submitBtn').click();
+    }
+});

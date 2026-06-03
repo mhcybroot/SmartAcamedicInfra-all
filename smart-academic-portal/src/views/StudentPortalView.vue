@@ -85,12 +85,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const mode = ref('admin')
 
-const adminUrl = 'http://localhost:7511/?embedded=true'
-const studentUrl = 'http://127.0.0.1:7511/employee/dashboard?embedded=true'
+const hostname = window.location.hostname
+const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]'
+
+const adminUrl = computed(() => {
+  const host = isLocal ? 'localhost' : hostname
+  return `http://${host}:7511/?embedded=true`
+})
+
+const studentUrl = computed(() => {
+  const host = isLocal ? '127.0.0.1' : hostname
+  return `http://${host}:7511/employee/dashboard?embedded=true`
+})
 
 const studentAuthenticated = ref(false)
 const studentUsername = ref('employee')
@@ -109,7 +119,8 @@ async function loginAsStudent() {
     formData.append('password', studentPassword.value)
     formData.append('remember-me', 'on')
 
-    const res = await fetch('http://127.0.0.1:7511/login', {
+    const host = isLocal ? '127.0.0.1' : hostname
+    const res = await fetch(`http://${host}:7511/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: formData.toString(),

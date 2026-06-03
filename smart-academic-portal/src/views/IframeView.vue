@@ -38,7 +38,14 @@ const iframeKey = ref(0)
 let timer = null
 
 const iframeSrc = computed(() => {
-  return route.meta.src
+  if (!route.meta.src) return ''
+  try {
+    const url = new URL(route.meta.src)
+    url.hostname = window.location.hostname
+    return url.toString()
+  } catch (e) {
+    return route.meta.src
+  }
 })
 
 const routeTitle = computed(() => {

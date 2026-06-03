@@ -28,7 +28,18 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
     </style>
+
+    <!-- Smart Academic Infrastructure Unified Theme Injection -->
+    <link rel="stylesheet" th:href="@{/css/smart-academic-theme.css}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.self !== window.top || window.location.search.includes('embedded=true')) {
+                document.documentElement.classList.add('embedded-mode');
+            }
+        });
+    </script>
 </head>
+
 
 <body>
     <div th:replace="navbar :: navbar"></div>

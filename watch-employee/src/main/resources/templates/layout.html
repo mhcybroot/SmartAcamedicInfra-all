@@ -25,6 +25,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (window.self !== window.top || window.location.search.includes('embedded=true')) {
                 document.documentElement.classList.add('embedded-mode');
+                
+                // Configure global Chart.js defaults for dark theme
+                if (typeof Chart !== 'undefined') {
+                    Chart.defaults.color = '#e2f5ed';
+                    Chart.defaults.borderColor = 'rgba(16, 185, 129, 0.15)';
+                }
             }
         });
     </script>

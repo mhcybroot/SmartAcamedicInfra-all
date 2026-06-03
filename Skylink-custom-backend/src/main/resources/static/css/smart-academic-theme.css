@@ -807,3 +807,130 @@ html.embedded-mode ::-webkit-scrollbar-thumb {
 html.embedded-mode ::-webkit-scrollbar-thumb:hover {
     background: var(--sai-green);
 }
+
+/* ============================================ */
+/* WATCH STUDENT (WATCH-EMPLOYEE) ADAPTATIONS  */
+/* ============================================ */
+
+/* Hide the internal double sidebar and footer logout */
+html.embedded-mode .sidebar {
+    display: none !important;
+}
+
+/* Let the main content span full width */
+html.embedded-mode .main-content {
+    margin-left: 0 !important;
+    padding: 1.5rem !important;
+}
+
+/* Style cards to match the glassmorphic emerald card theme */
+html.embedded-mode .card-custom,
+html.embedded-mode .stat-card {
+    background: rgba(16, 185, 129, 0.06) !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    color: #e2f5ed !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+    border-radius: 12px !important;
+}
+
+html.embedded-mode .card-custom:hover {
+    transform: translateY(-2px) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+    box-shadow: 0 12px 40px 0 rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Card Header */
+html.embedded-mode .card-header-custom {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.15) !important;
+    color: #e2f5ed !important;
+    font-weight: 600 !important;
+}
+
+/* Custom Table Styles */
+html.embedded-mode .table-custom {
+    width: 100% !important;
+    color: #e2f5ed !important;
+}
+
+html.embedded-mode .table-custom th {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #6ee7b7 !important;
+    border-bottom: 2px solid rgba(16, 185, 129, 0.2) !important;
+    font-weight: 600 !important;
+}
+
+html.embedded-mode .table-custom td {
+    background: transparent !important;
+    color: #e2f5ed !important;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.1) !important;
+}
+
+html.embedded-mode .table-custom tr:hover td {
+    background: rgba(16, 185, 129, 0.04) !important;
+}
+
+/* Buttons */
+html.embedded-mode .btn-primary-custom,
+html.embedded-mode .btn-primary {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+    border: 1px solid rgba(16, 185, 129, 0.4) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+html.embedded-mode .btn-primary-custom:hover,
+html.embedded-mode .btn-primary:hover {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+
+html.embedded-mode .btn-outline-secondary {
+    color: #6ee7b7 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    background: transparent !important;
+}
+
+html.embedded-mode .btn-outline-secondary:hover {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #e2f5ed !important;
+}
+
+/* Stat title and text colors */
+html.embedded-mode .stat-title {
+    color: #6ee7b7 !important;
+}
+
+html.embedded-mode .stat-value {
+    color: #f59e0b !important;
+}
+
+/* Badges styling */
+html.embedded-mode .badge-success {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+    color: #10b981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+html.embedded-mode .badge-warning {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+    color: #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.4) !important;
+}
+
+html.embedded-mode .badge-danger {
+    background-color: rgba(248, 113, 113, 0.2) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(248, 113, 113, 0.4) !important;
+}
+
+html.embedded-mode .badge-neutral {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #e2f5ed !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}

@@ -57,9 +57,9 @@ public class DataInitializer implements CommandLineRunner {
             initializeData();
         }
 
-        // Create default admin user if none exists and enabled
-        if (adminUserRepository.count() == 0 && adminCreationEnabled) {
-            createDefaultAdmin();
+        // Create or update default admin user if enabled
+        if (adminCreationEnabled) {
+            createOrUpdateDefaultAdmin();
         }
     }
 
@@ -178,11 +178,11 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Marks initialized for various scenarios (Best, Avg, Fail, Opt-Fail)");
     }
 
-    private void createDefaultAdmin() {
-        // Create default admin user from configuration
-        adminUserService.createAdmin(defaultAdminUsername, defaultAdminPassword);
+    private void createOrUpdateDefaultAdmin() {
+        // Create or update default admin user from configuration
+        adminUserService.createOrUpdateAdmin(defaultAdminUsername, defaultAdminPassword);
 
-        System.out.println("Default admin user created:");
+        System.out.println("Default admin user created/updated:");
         System.out.println("Username: " + defaultAdminUsername);
         System.out.println("Password: " + defaultAdminPassword);
         System.out.println("Access admin functions at: /admin-login");

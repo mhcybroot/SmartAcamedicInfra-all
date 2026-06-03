@@ -50,6 +50,23 @@ public class AdminUserService implements UserDetailsService {
         return createAdmin(username, password, "SUPER_ADMIN", null);
     }
 
+    public AdminUser createOrUpdateAdmin(String username, String password, String role, Long teacherId) {
+        java.util.Optional<AdminUser> existing = adminUserRepository.findByUsername(username);
+        if (existing.isPresent()) {
+            AdminUser adminUser = existing.get();
+            adminUser.setPassword(passwordEncoder.encode(password));
+            adminUser.setRole(role != null ? role : "SUPER_ADMIN");
+            adminUser.setTeacherId(teacherId);
+            return adminUserRepository.save(adminUser);
+        } else {
+            return createAdmin(username, password, role, teacherId);
+        }
+    }
+
+    public AdminUser createOrUpdateAdmin(String username, String password) {
+        return createOrUpdateAdmin(username, password, "SUPER_ADMIN", null);
+    }
+
     public boolean existsByUsername(String username) {
         return adminUserRepository.existsByUsername(username);
     }

@@ -33,7 +33,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/", "/admin-login", "/student-login",
                                                                 "/teacher-login", "/login-portal",
                                                                 "/developer", "/css/**", "/js/**", "/images/**",
-                                                                "/attendance/public/**")
+                                                                "/attendance/public/**", "/api/demo/**")
                                                 .permitAll()
                                                 .requestMatchers("/h2-console/**").permitAll()
                                                 .requestMatchers("/view-results", "/search-results").permitAll()
@@ -66,7 +66,8 @@ public class SecurityConfig {
                                                 .invalidateHttpSession(true)
                                                 .deleteCookies("JSESSIONID")
                                                 .permitAll())
-                                // CSRF Enabled by default (removed disable())
+                                // CSRF Enabled by default, ignore for demo API
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/demo/**"))
                                 .headers(headers -> headers.frameOptions().disable());
 
                 return http.build();

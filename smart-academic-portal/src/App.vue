@@ -33,9 +33,15 @@
           <span>Demo Tools</span>
         </div>
 
-        <button class="nav-item generate-btn" @click="generateData" :disabled="generating">
-          <span class="icon" :class="{ spinning: generating }">🎲</span>
-          <span v-if="!generating">Generate Random Data</span>
+        <button class="nav-item generate-btn academic-btn" @click="generateAcademicData" :disabled="generatingAcademic">
+          <span class="icon" :class="{ spinning: generatingAcademic }">🎲</span>
+          <span v-if="!generatingAcademic">Generate Academic Data</span>
+          <span v-else>Generating…</span>
+        </button>
+
+        <button class="nav-item generate-btn exam-btn" @click="generateExamData" :disabled="generatingExam">
+          <span class="icon" :class="{ spinning: generatingExam }">📝</span>
+          <span v-if="!generatingExam">Generate Results Data</span>
           <span v-else>Generating…</span>
         </button>
       </nav>
@@ -89,7 +95,8 @@ const currentRouteName = computed(() => {
 })
 
 // ── Generate Demo Data ────────────────────────────────────────────────
-const generating = ref(false)
+const generatingAcademic = ref(false)
+const generatingExam = ref(false)
 const toast = reactive({ show: false, message: '', type: 'success' })
 
 function showToast(message, type = 'success') {
@@ -99,8 +106,8 @@ function showToast(message, type = 'success') {
   setTimeout(() => { toast.show = false }, 4000)
 }
 
-async function generateData() {
-  generating.value = true
+async function generateAcademicData() {
+  generatingAcademic.value = true
   try {
     const res = await fetch('http://localhost:8083/api/demo/generate', { method: 'POST' })
     const data = await res.json()
@@ -112,7 +119,24 @@ async function generateData() {
   } catch (e) {
     showToast('❌ Could not reach Academic backend. Is it running?', 'error')
   } finally {
-    generating.value = false
+    generatingAcademic.value = false
+  }
+}
+
+async function generateExamData() {
+  generatingExam.value = true
+  try {
+    const res = await fetch('http://localhost:9087/api/demo/generate', { method: 'POST' })
+    const data = await res.json()
+    if (res.ok) {
+      showToast(data.message || `✅ Seeded student exam results!`, 'success')
+    } else {
+      showToast('Error: ' + (data.error || 'Unknown error'), 'error')
+    }
+  } catch (e) {
+    showToast('❌ Could not reach Exam/Result backend. Is it running?', 'error')
+  } finally {
+    generatingExam.value = false
   }
 }
 </script>
@@ -281,20 +305,37 @@ async function generateData() {
   width: 100%;
   text-align: left;
   cursor: pointer;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: #c4b5fd;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 500;
   transition: all 0.2s ease;
+  margin-bottom: 6px;
 }
 
-.generate-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.15));
+.academic-btn {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #c4b5fd;
+}
+
+.academic-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(99, 102, 241, 0.15));
   color: #a78bfa;
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+}
+
+.exam-btn {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #a7f3d0;
+}
+
+.exam-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.15));
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
 }
 
 .generate-btn:disabled {

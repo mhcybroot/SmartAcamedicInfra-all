@@ -24,6 +24,11 @@ public class AdminController {
         this.domainCategoryRepository = domainCategoryRepository;
     }
 
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/admin";
+    }
+
     @GetMapping("/admin/categories")
     public String listCategories(Model model) {
         model.addAttribute("categories", domainCategoryRepository.findAll());

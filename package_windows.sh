@@ -5,13 +5,13 @@ echo "================================================="
 
 # 1. Compile Spring Boot Backends (if not already compiled/UP-TO-DATE)
 echo "Building Skylink..."
-cd Skylink-custom-backend && ./gradlew bootJar && cd ..
+cd Skylink-custom-backend && ./gradlew --gradle-user-home .gradle_home bootJar && cd ..
 
 echo "Building RMS..."
-cd Result-Management-System && ./gradlew bootJar && cd ..
+cd Result-Management-System && ./gradlew --gradle-user-home .gradle_home bootJar && cd ..
 
 echo "Building Student Watch..."
-cd watch-employee && ./gradlew bootJar && cd ..
+cd watch-employee && ./gradlew --gradle-user-home .gradle_home bootJar && cd ..
 
 # 2. Create Staging Directory
 STAGING_DIR="smart-academic-windows"

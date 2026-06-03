@@ -44,6 +44,12 @@
           <span v-if="!generatingExam">Generate Results Data</span>
           <span v-else>Generating…</span>
         </button>
+
+        <button class="nav-item generate-btn watch-btn" @click="generateWatchData" :disabled="generatingWatch">
+          <span class="icon" :class="{ spinning: generatingWatch }">🛡️</span>
+          <span v-if="!generatingWatch">Generate Watch Data</span>
+          <span v-else>Generating…</span>
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -97,6 +103,7 @@ const currentRouteName = computed(() => {
 // ── Generate Demo Data ────────────────────────────────────────────────
 const generatingAcademic = ref(false)
 const generatingExam = ref(false)
+const generatingWatch = ref(false)
 const toast = reactive({ show: false, message: '', type: 'success' })
 
 function showToast(message, type = 'success') {
@@ -137,6 +144,23 @@ async function generateExamData() {
     showToast('❌ Could not reach Exam/Result backend. Is it running?', 'error')
   } finally {
     generatingExam.value = false
+  }
+}
+
+async function generateWatchData() {
+  generatingWatch.value = true
+  try {
+    const res = await fetch('http://localhost:8565/api/demo/generate', { method: 'POST' })
+    const data = await res.json()
+    if (res.ok) {
+      showToast(data.message || `✅ Seeded Student Watch mock data!`, 'success')
+    } else {
+      showToast('Error: ' + (data.error || 'Unknown error'), 'error')
+    }
+  } catch (e) {
+    showToast('❌ Could not reach Student Watch backend. Is it running?', 'error')
+  } finally {
+    generatingWatch.value = false
   }
 }
 </script>
@@ -336,6 +360,19 @@ async function generateExamData() {
   color: #34d399;
   border-color: rgba(16, 185, 129, 0.5);
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+
+.watch-btn {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.05));
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #a5f3fc;
+}
+
+.watch-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(6, 182, 212, 0.15));
+  color: #22d3ee;
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.25);
 }
 
 .generate-btn:disabled {

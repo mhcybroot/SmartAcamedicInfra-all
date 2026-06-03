@@ -12,12 +12,18 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final mh.cyb.root.watch_employee.repository.DomainCategoryRepository domainCategoryRepository;
+    private final mh.cyb.root.watch_employee.repository.EmployeeRepository employeeRepository;
+    private final mh.cyb.root.watch_employee.service.DemoDataService demoDataService;
 
     public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            mh.cyb.root.watch_employee.repository.DomainCategoryRepository domainCategoryRepository) {
+            mh.cyb.root.watch_employee.repository.DomainCategoryRepository domainCategoryRepository,
+            mh.cyb.root.watch_employee.repository.EmployeeRepository employeeRepository,
+            mh.cyb.root.watch_employee.service.DemoDataService demoDataService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.domainCategoryRepository = domainCategoryRepository;
+        this.employeeRepository = employeeRepository;
+        this.demoDataService = demoDataService;
     }
 
     @Override
@@ -30,6 +36,11 @@ public class DataInitializer implements CommandLineRunner {
             admin.setRole("ROLE_ADMIN");
             userRepository.save(admin);
             System.out.println("Default admin user created: admin / admin123");
+        }
+
+        if (employeeRepository.count() == 0) {
+            demoDataService.regenerate();
+            System.out.println("Automatic Student Watch mock database seeding completed on startup.");
         }
 
         if (domainCategoryRepository.count() == 0) {

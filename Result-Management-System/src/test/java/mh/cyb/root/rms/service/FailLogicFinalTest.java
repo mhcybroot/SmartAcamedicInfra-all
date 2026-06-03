@@ -113,8 +113,8 @@ public class FailLogicFinalTest {
     private void generatePDF(ReportCardData data, String filename) {
         try {
             byte[] pdfBytes = reportService.generatePDF(data);
-            Path path = Paths.get("C:\\Users\\HP\\.gemini\\antigravity\\brain\\1c9aaa6b-500b-4a8c-865f-7d65dbf64fea",
-                    filename);
+            Path path = Paths.get("build", filename);
+            Files.createDirectories(path.getParent());
             Files.write(path, pdfBytes);
             System.out.println("Generated PDF: " + path.toAbsolutePath());
         } catch (Exception e) {

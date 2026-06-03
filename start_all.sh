@@ -9,19 +9,19 @@ mkdir -p logs
 
 echo "[1/4] Starting Result Management System (Port 7512)..."
 cd Result-Management-System
-./gradlew bootRun > ../logs/result_management.log 2>&1 &
+./gradlew --gradle-user-home .gradle_home bootRun > ../logs/result_management.log 2>&1 &
 PID1=$!
 cd ..
 
 echo "[2/4] Starting Academic Member Management (Port 7511)..."
 cd Skylink-custom-backend
-./gradlew bootRun > ../logs/skylink.log 2>&1 &
+./gradlew --gradle-user-home .gradle_home bootRun > ../logs/skylink.log 2>&1 &
 PID2=$!
 cd ..
 
 echo "[3/4] Starting Student Watch System (Port 7513)..."
 cd watch-employee
-./gradlew bootRun > ../logs/watch_employee.log 2>&1 &
+./gradlew --gradle-user-home .gradle_home bootRun > ../logs/watch_employee.log 2>&1 &
 PID3=$!
 cd ..
 
